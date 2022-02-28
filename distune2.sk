@@ -1,0 +1,2222 @@
+#! OG DONT REMOVE
+# To enable bot:
+# 	cd C:\Users\xCerialPvP_\Desktop\Cerial's Utilities
+# 	CMD: start.bat
+# 	PS: .\start.bat
+# 	press any key
+
+# To resume screen:
+# 	screen -r
+
+options:
+	botfight: "false"
+
+	token: "no token for you L"
+	bot: "DisTune"
+	botName: DisTune
+	p: $
+	OwnerID: 702044939520835587
+	abc: "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y" or "z" 
+
+	# footer
+	footerText: "DisTune - A powerful Discord bot of your dreams."
+	icon: "https://cdn.discordapp.com/attachments/809401069489750057/947037864120680458/distune-new.png"
+
+	# yaml
+	path: "plugins/DisTune/favorites.yml"
+
+	# colors
+	red: color from rgb 255, 0, 0
+	blue: color from rgb 0, 0, 255
+	green: color from rgb 0, 255, 0
+	yellow: color from rgb 221, 255, 0
+	orange: color from rgb 255, 179, 0
+	aqua: color from rgb 0, 255, 251
+	cyan: color from rgb 31, 145, 144
+	black: color from rgb 0, 0, 0
+	gray: color from rgb 28, 27, 27
+	purple: color from rgb 54, 64, 246
+	
+	# discord api shit
+	url: https://discord.com/api/v10/
+
+on load:
+	set {_token} to yml value "bot.token" from file "plugins/DisTune/important.yml"
+	login to {_token} with name {@bot}
+	set online status of bot {@bot} to online
+	wait 2 seconds
+	set {_size} to size of guilds of bot named {@bot}
+	set presence of bot named {@bot} to playing "music in %{_size}% servers! | {@p}help"
+
+on unload:
+	set online status of bot {@bot} to do not disturb
+	set presence of bot named {@bot} to playing "Reloading..."
+
+variables:
+	{together::id::youtube} = 880218394199220334
+	{together::id::youtubedev} = 880218832743055411
+	{together::id::poker} = 755827207812677713
+	{together::id::betrayal} = 773336526917861400
+	{together::id::fishing} = 814288819477020702
+	{together::id::chess} = 832012774040141894
+	{together::id::chessdev} = 832012586023256104
+	{together::id::lettertile} = 879863686565621790
+	{together::id::wordsnack} = 879863976006127627
+	{together::id::doodlecrew} = 878067389634314250
+	{together::id::checkers} = 832013003968348200
+	{together::id::puttparty} = 763133495793942528
+	{together::id::sketchyartist} = 879864070101172255
+
+function noperm(p: text, id: integer):
+	make embed:
+		set title of the embed to "Lacking permissions!"
+		set description of the embed to "You or your role is lacking the permission **%{_p}%**."
+		set color of the embed to green
+		set footer of the embed to {@footerText}
+		set footer icon of the embed to {@icon}
+		set timestamp of the embed to now
+	send embed to text channel with id "%{_id}%" with bot named {@bot}
+
+function checkCerial(id: integer) :: boolean:
+	if {_id} = "702044939520835587":
+		return true
+	
+	else:
+		return false
+
+function checkDev(id: integer) :: boolean:
+	if {_id} = "":
+		return true
+	
+	else:
+		return false
+
+discord command {@p}addevalblacklist [<string>]:
+	trigger:
+		if discord id of event-member = "702044939520835587":
+			if arg 1 is set:
+				add arg 1 to {blacklist.Eval::*}
+				reply to event-message with "Added **%arg 1%** to eval blacklist. Anyone can't type anything involved with that."
+				stop
+
+discord command eval [<string>]:
+	prefixes: {@p}
+	category: other
+	description: Evaluates Skript code.
+	trigger:
+		delete {_err::*}
+		#reply to event-message with "NOTE: At <t:1644501600>, ALL DisTune commands prefixed with `{@p}` will be removed, and will be replaced with slash commands instead. This is to cooperate with Discord enforcing slash commands in April. Thank you for understanding." with event-bot
+		#if discord id of event-channel = "922539550008541193":
+		if arg 1 is set:
+			# > We set a line number to every lines
+			# > *huh, it could be easier and faster through stream but whatever*
+			set {_code} to arg-1
+			set {_finalcode} to ""
+			set {_i} to 1
+			loop split {_code} at nl:
+				set {_finalcode} to "%{_finalcode}%%nl%%{_i}% | %loop-value%"
+			add 1 to {_i}
+			set {_code} to {_finalcode}
+
+			# destroy event-message
+			# > This is as you like ^
+			make embed:
+				set author of embed to "Code of %event-member%:"
+				set author icon of embed to avatar of event-member
+				set color of embed to yellow
+				set description of embed to "__Your current code:__```applescript%nl%%{_code}%%nl%```%nl%__Parser Errors:__%nl%```Under execution ...```"
+				set footer of the embed to {@footerText}
+				set footer icon of the embed to {@icon}
+			set {_last} to last embed
+			reply to event-message using last made embed with mention true with event-bot and store it in {_msg}
+
+			wait 1 second
+			if discord id of event-member = "702044939520835587" or "410781931727486976":
+				if arg 1 contains "upload file ""plugins/DisTune/important.yml""", "upload file ""plugins/Skript/scripts/distune2.sk""", "upload file ""plugins\DisTune\important.yml""" or "upload file ""plugins\Skript\scripts\distune2.sk""":
+					add "This is a critical file which is not allowed to be leaked!" to {_err::*}
+				#if arg 1 contains "to console":
+					#replace all "send " and " to console" in {_s} with ""
+					#send "[Sent by DisTune eval] %{_s}%" to console
+				else:
+					eval arg-1 and store the errors in {_err::*}
+				
+			else:
+				eval without executing arg-1 and store the errors in {_err::*}
+
+			# > Don't ask me why I need to do something like that, is empty condition doesn't work here lmao
+			if "%{_err::1}%" contains "<none>":
+				set {_result} to "No error found!"
+				if discord id of event-member = "702044939520835587" or "410781931727486976":
+					set {_result} to "%{_result}% The code has been executed."
+					
+				else:
+					set {_result} to "%{_result}% The code didn't execute since you're not Cerial or Emirhan."
+				set embed color of {_last} to lime
+			else:
+				set {_result} to join {_err::*} with nl
+				set embed color of {_last} to red
+			set embed description of {_last} to "__Your current code:__```applescript%nl%%{_code}%%nl%```%nl%__Parser Errors (%size of {_err::*}%):__%nl%```%{_result}%```%nl%"
+			edit {_msg} to show {_last}
+				
+		else:
+			make embed:
+				set author of the embed to "Eval Command"
+				set author icon of the embed to {@icon}
+				set title of the embed to "Eval info:"
+				set description of the embed to "This command evaluates Skript code.%nl%Basically, you type a few lines of Skript code, then I will parse your code, and I will return errors if there are any.%nl%Only the owner gets the result of the command."
+				set color of the embed to color from rgb 255, 0, 0
+				set timestamp of the embed to now
+				set the footer of embed to {@footerText}
+				set the footer icon of embed to {@icon}
+			reply to event-message using last made embed with mention true with event-bot
+		
+
+discord command play [<string>]:
+	prefixes: {@p}
+	category: music
+	description: Plays music in a user's VC.
+	trigger:
+		#reply to event-message with "NOTE: At <t:1644501600>, ALL DisTune commands prefixed with `{@p}` will be removed, and will be replaced with slash commands instead. This is to cooperate with Discord enforcing slash commands in April. Thank you for understanding." with event-bot
+		#if discord id of event-guild != "919252887694110740":
+		#	reply to event-message with "Sorry, this command is temporarely not available to all guilds. There might be a new feature coming soon!" with event-bot
+		#	stop
+		if checkDistuneBan(event-guild) = true:
+			reply to event-message with "This server is DisTune banned! The owner (<@%discord id of owner of event-guild%>) needs to appeal the server ban!"
+			stop
+		set {_b} to self member of event-bot in event-guild
+		if voice channel of event-member is not set:
+			make embed:
+				set author of the embed to "Play"
+				set author icon of the embed to {@icon}
+				set title of the embed to "Your not in a VC!"
+				set description of the embed to "To play music, you need to join a VC!"
+				set footer of the embed to {@footerText}
+				set footer icon of the embed to {@icon}
+				set color of the embed to {@red}
+			reply to event-message with last made embed with event-bot
+
+		else:
+			if arg 1 is set:
+				if arg 1 contains "youtube.com" or "youtu.be":
+					search in youtube for arg 1 and store it in {_r::*}
+					if {_r::*} is not set:
+						make embed:
+							set author of the embed to "Play"
+							set author icon of the embed to {@icon}
+							set title of the embed to "Song unlisted / private!"
+							set description of the embed to "The link you have gave me is either unlisted or private."
+							set footer of the embed to {@footerText}
+							set footer icon of the embed to {@icon}
+							set color of the embed to {@red}
+						reply to event-message with last made embed with event-bot
+						stop
+					set {_thumb} to arg 1
+					replace all "https://youtube.com/watch?v=" and "https://youtu.be/" in {_thumb} with ""
+					set {_vc} to voice channel of event-member
+					connect event-bot to {_vc}
+					#play "https://cdn.discordapp.com/attachments/937063478324236358/937063501925609503/distune_songcountdown.mp3" in event-guild with bot {@bot}
+					wait 0.1 seconds
+					play {_r::1} in event-guild with event-bot
+					make embed:
+						set author of the embed to "Play"
+						set author icon of the embed to {@icon}
+						set title of the embed to "Playing music"
+						set description of the embed to "I am now playing **%{_r::1}%**! Keep vibin'!"
+						add field named "Track Duration" with value "%normalized track duration of {_r::1}%" to embed
+						add field named "Song URL" with value "%url of {_r::1}%" to embed
+						set image of the embed to track thumbnail of {_r::1}
+						set footer of the embed to {@footerText}
+						set footer icon of the embed to {@icon}
+						set color of the embed to {@green}
+					reply to event-message with last made embed with event-bot
+					stop
+				
+				if arg 1 contains "music.youtube.com":
+					set {_play} to arg 1
+					replace all "music." in {_play} with ""
+					search in youtube for {_play} and store it in {_r::*}
+					if {_r::*} is not set:
+						make embed:
+							set author of the embed to "Play"
+							set author icon of the embed to {@icon}
+							set title of the embed to "Song unlisted / private!"
+							set description of the embed to "The link you have gave me is either unlisted or private."
+							set footer of the embed to {@footerText}
+							set footer icon of the embed to {@icon}
+							set color of the embed to {@red}
+						reply to event-message with last made embed with event-bot
+						stop
+					set {_thumb} to {_play}
+					replace all "https://youtube.com/watch?v=" and "&feature=" in {_thumb} with ""
+					set {_vc} to voice channel of event-member
+					connect event-bot to {_vc}
+					#play "https://cdn.discordapp.com/attachments/937063478324236358/937063501925609503/distune_songcountdown.mp3" in event-guild with bot {@bot}
+					wait 0.1 seconds
+					play {_r::1} in event-guild with event-bot
+					make embed:
+						set author of the embed to "Play"
+						set author icon of the embed to {@icon}
+						set title of the embed to "Playing music"
+						set description of the embed to "I am now playing **%{_r::1}%**! Keep vibin'!"
+						add field named "Track Duration" with value "%normalized track duration of {_r::1}%" to embed
+						add field named "Song URL" with value "%url of {_r::1}%" to embed
+						set image of the embed to track thumbnail of {_r::1}
+						set footer of the embed to {@footerText}
+						set footer icon of the embed to {@icon}
+						set color of the embed to {@green}
+					reply to event-message with last made embed with event-bot
+					stop
+
+				else:
+					search in youtube for arg 1 and store it in {_r::*}
+					make embed:
+						set author of the embed to "Play"
+						set author icon of the embed to {@icon}
+						set title of the embed to "Searching..."
+						set description of the embed to "I am searching for **%arg 1%** on YouTube!"
+						set footer of the embed to {@footerText}
+						set footer icon of the embed to {@icon}
+						set color of the embed to {@yellow}
+					reply to event-message with last made embed with event-bot and store it in {_msg}
+					if {_r::*} is not set:
+						make embed:
+							set author of the embed to "Play"
+							set author icon of the embed to {@icon}
+							set title of the embed to "No results!"
+							set description of the embed to "I can't find **%arg 1%** in YouTube! Try to provide a YouTube URL."
+							set footer of the embed to {@footerText}
+							set footer icon of the embed to {@icon}
+							set color of the embed to {@red}
+						edit {_msg} to show last made embed
+					
+					else:
+						set {_vc} to voice channel of event-member
+						connect event-bot to {_vc}
+						force #play "https://cdn.discordapp.com/attachments/937063478324236358/937063501925609503/distune_songcountdown.mp3" in event-guild with bot {@bot}
+						wait 0.1 seconds
+						play {_r::1} in event-guild with event-bot
+						set {_t} to {_r::1}
+						make embed:
+							set author of the embed to "Play"
+							set author icon of the embed to {@icon}
+							set title of the embed to "Playing music"
+							set description of the embed to "I am now playing **%{_r::1}%**! Keep vibin'!%nl%This song isn't what you looked for? Try specifying a YouTube URL of the song you're looking for."
+							add field named "Track Duration" with value "%normalized track duration of {_r::1}%" to embed
+							add field named "Song URL" with value "%url of {_r::1}%" to embed
+							set image of the embed to track thumbnail of {_t}
+							set footer of the embed to {@footerText}
+							set footer icon of the embed to {@icon}
+							set color of the embed to {@green}
+						edit {_msg} to show last made embed
+			
+			else:
+				make embed:
+					set author of the embed to "Play"
+					set author icon of the embed to {@icon}
+					set title of the embed to "No song name / URL!"
+					set description of the embed to "Please specify a song name or YouTube / YouTube Music URL!"
+					set footer of the embed to {@footerText}
+					set footer icon of the embed to {@icon}
+					set color of the embed to {@red}
+				reply to event-message with last made embed with event-bot
+
+
+slash command play <string>:
+	description: Plays music in a user's VC.
+	guilds: 932659866110160936
+	#bots: DisTune
+	options:
+		1:
+			name: query
+			description: Enter a YouTube URL or query to search.
+	
+	trigger:
+		set {_b} to self member of event-bot in event-guild
+		if voice channel of event-member is not set:
+			make embed:
+				set author of the embed to "Play"
+				set author icon of the embed to {@icon}
+				set title of the embed to "Your not in a VC!"
+				set description of the embed to "To play music, you need to join a VC!"
+				set color of the embed to {@red}
+			reply with hidden last made embed with event-bot
+
+		else:
+			if arg 1 is set:
+				if arg 1 contains "youtube.com" or "youtu.be":
+					search in youtube for arg 1 and store it in {_r::*}
+					if {_r::*} is not set:
+						make embed:
+							set author of the embed to "Play"
+							set author icon of the embed to {@icon}
+							set title of the embed to "Song unlisted / private!"
+							set description of the embed to "The link you have gave me is either unlisted or private."
+							set color of the embed to {@red}
+						reply with hidden last made embed with event-bot
+						stop
+					set {_thumb} to arg 1
+					replace all "https://youtube.com/watch?v=" and "https://youtu.be/" in {_thumb} with ""
+					set {_vc} to voice channel of event-member
+					connect event-bot to {_vc}
+					#play "https://cdn.discordapp.com/attachments/937063478324236358/937063501925609503/distune_songcountdown.mp3" in event-guild with bot {@bot}
+					wait 0.1 seconds
+					play {_r::1} in event-guild with event-bot
+					make embed:
+						set author of the embed to "Play"
+						set author icon of the embed to {@icon}
+						set title of the embed to "Playing music"
+						set description of the embed to "I am now playing **%{_r::1}%**! Keep vibin'!"
+						add field named "Track Duration" with value "%normalized track duration of {_r::1}%" to embed
+						set image of the embed to track thumbnail of {_r::1}
+						set color of the embed to {@green}
+					reply with last made embed with event-bot
+					stop
+				
+				if arg 1 contains "music.youtube.com":
+					set {_play} to arg 1
+					replace all "music." in {_play} with ""
+					search in youtube for {_play} and store it in {_r::*}
+					if {_r::*} is not set:
+						make embed:
+							set author of the embed to "Play"
+							set author icon of the embed to {@icon}
+							set title of the embed to "Song unlisted / private!"
+							set description of the embed to "The link you have gave me is either unlisted or private."
+							set color of the embed to {@red}
+						reply with hidden last made embed with event-bot
+						stop
+					set {_thumb} to {_play}
+					replace all "https://youtube.com/watch?v=" and "&feature=" in {_thumb} with ""
+					set {_vc} to voice channel of event-member
+					connect event-bot to {_vc}
+					#play "https://cdn.discordapp.com/attachments/937063478324236358/937063501925609503/distune_songcountdown.mp3" in event-guild with bot {@bot}
+					wait 0.1 seconds
+					play {_r::1} in event-guild with event-bot
+					make embed:
+						set author of the embed to "Play"
+						set author icon of the embed to {@icon}
+						set title of the embed to "Playing music"
+						set description of the embed to "I am now playing **%{_r::1}%**! Keep vibin'!"
+						add field named "Track Duration" with value "%normalized track duration of {_r::1}%" to embed
+						set image of the embed to track thumbnail of {_r::1}
+						set color of the embed to {@green}
+					reply with last made embed with event-bot
+					stop
+				
+				else:
+					search in youtube for arg 1 and store it in {_r::*}
+					make embed:
+						set author of the embed to "Play"
+						set author icon of the embed to {@icon}
+						set title of the embed to "Searching..."
+						set description of the embed to "I am searching for **%arg 1%** on YouTube!"
+						set color of the embed to {@yellow}
+					reply with last made embed with event-bot and store it in {_msg}
+					if {_r::*} is not set:
+						make embed:
+							set author of the embed to "Play"
+							set author icon of the embed to {@icon}
+							set title of the embed to "No results!"
+							set description of the embed to "I can't find **%arg 1%** in YouTube! Try to provide a YouTube URL."
+							set color of the embed to {@red}
+						edit {_msg} to show last made embed
+					
+					else:
+						set {_vc} to voice channel of event-member
+						connect event-bot to {_vc}
+						force #play "https://cdn.discordapp.com/attachments/937063478324236358/937063501925609503/distune_songcountdown.mp3" in event-guild with bot {@bot}
+						wait 0.1 seconds
+						play {_r::1} in event-guild with event-bot
+						set {_t} to {_r::1}
+						make embed:
+							set author of the embed to "Play"
+							set author icon of the embed to {@icon}
+							set title of the embed to "Playing music"
+							set description of the embed to "I am now playing **%{_r::1}%**! Keep vibin'!%nl%This song isn't what you looked for? Try specifying a YouTube URL of the song you're looking for."
+							add field named "Track Duration" with value "%normalized track duration of {_r::1}%" to embed
+							set image of the embed to track thumbnail of {_t}
+							set color of the embed to {@green}
+						edit {_msg} to show last made embed
+			
+			else:
+				make embed:
+					set author of the embed to "Play"
+					set author icon of the embed to {@icon}
+					set title of the embed to "No song name / URL!"
+					set description of the embed to "Please specify a song name or YouTube / YouTube Music URL!"
+					set color of the embed to {@red}
+				reply with last made embed with event-bot
+
+discord command resume:
+	prefixes: {@p}
+	category: music
+	description: Unpauses / Resumes the paused song.
+	trigger:
+		#reply to event-message with "NOTE: At <t:1644501600>, ALL DisTune commands prefixed with `{@p}` will be removed, and will be replaced with slash commands instead. This is to cooperate with Discord enforcing slash commands in April. Thank you for understanding." with event-bot
+		resume in event-guild
+
+on button click:
+	if event-button = "queue":
+		make embed:
+			set author of the embed to "Server Queue"
+			set author icon of the embed to {@icon}
+			set title of the embed to "Queue"
+			set {_size} to size of queue of event-guild
+			set {_queue::*} to queue of event-guild
+			set {_num} to -1
+			loop 11 times:
+				add 1 to {_num}
+				if {_queue::%{_num}%} is set:
+					add "##%{_num}%. **%{_queue::%{_num}%}%** **[%track duration of {_queue::%{_num}%}%]**%nl%" to {_songs::*}
+			set description of the embed to join {_songs::*} with nl
+			set color of the embed to {@purple}
+		reply with hidden last made embed
+
+
+
+discord command stop:
+	prefixes: {@p}
+	category: music
+	description: Stops the current song you're listening to.
+	trigger:
+		#reply to event-message with "NOTE: At <t:1644501600>, ALL DisTune commands prefixed with `{@p}` will be removed, and will be replaced with slash commands instead. This is to cooperate with Discord enforcing slash commands in April. Thank you for understanding." with event-bot
+		set {_bot} to self member of event-bot in event-guild
+		if voice channel of {_bot} is set:
+			stop current queue of event-guild
+			disconnect bot of event-guild
+			make embed:
+				set author of the embed to "Play Command"
+				set author icon of the embed to {@icon}
+				set title of the embed to "Stopped Music"
+				set description of the embed to "I have stopped the music in **%event-guild%**."
+				set footer of the embed to {@footerText}
+				set footer icon of the embed to {@icon}
+				set color of the embed to lime
+			reply to event-message using last made embed with event-bot
+
+discord command repeat:
+	prefixes: {@p}
+	category: music
+	description: Repeats the current song you're listening to.
+	aliases: loop
+	trigger:
+		#reply to event-message with "NOTE: At <t:1644501600>, ALL DisTune commands prefixed with `{@p}` will be removed, and will be replaced with slash commands instead. This is to cooperate with Discord enforcing slash commands in April. Thank you for understanding." with event-bot
+		if bot is repeating in event-guild:
+			set repeating state of event-guild to false
+			make embed:
+				set author of the embed to "Repeat / Loop"
+				set author icon of the embed to {@icon}
+				set title of the embed to "Looping is disabled!"
+				set description of the embed to "I am no longer looping the same song in **%event-guild%**."
+				set footer of the embed to {@footerText}
+				set footer icon of the embed to {@icon}
+				set color of the embed to lime
+			reply to event-message using last made embed with event-bot
+		
+		else:
+			set repeating state of event-guild to true
+			make embed:
+				set author of the embed to "Repeat / Loop"
+				set author icon of the embed to {@icon}
+				set title of the embed to "Looping is enabled!"
+				set description of the embed to "I am now looping the current song in **%event-guild%**."
+				set footer of the embed to {@footerText}
+				set footer icon of the embed to {@icon}
+				set color of the embed to lime
+			reply to event-message using last made embed with event-bot
+
+discord command {@p}skip:
+	category: music
+	description: Skips the current song that is playing.
+	trigger:
+		skip track of event-guild with event-bot
+		make embed:
+			set author of the embed to "Skip"
+			set author icon of the embed to {@icon}
+			set title of the embed to "Track skipped!"
+			set description of the embed to "I am now playing the next song in queue."
+			set footer of the embed to {@footerText}
+			set footer icon of the embed to {@icon}
+			set color of the embed to lime
+		reply to event-message using last made embed with event-bot
+
+discord command {@p}fastforward [<integer>]:
+	aliases: ff
+	category: music
+	description: (BROKEN) Fast forwards a song by a few seconds
+	trigger:
+		if arg 1 is set:
+			set {_pp} to track position of track event-bot is playing in event-guild
+			wait 0.1 seconds
+			set {_s} to arg 1 parsed as a number
+			set {_s} to ceil({_s})
+			add {_s} seconds to track position of track event-bot is playing in event-guild
+			wait 0.1 seconds
+			set {_pp2} to track position of track event-bot is playing in event-guild
+			make embed:
+				set author of the embed to "Fast Forward"
+				set author icon of the embed to {@icon}
+				set title of the embed to "Track fast forwarded!"
+				set description of the embed to "I have fast forwarded the track by **%arg 1%** seconds!"
+				add field named "Old position" with value "%{_pp}%" to embed
+				add field named "New position" with value "%{_pp2}%" to embed
+				set footer of the embed to {@footerText}
+				set footer icon of the embed to {@icon}
+				set color of the embed to {@green}
+			reply to event-message using last made embed with event-bot
+
+discord command {@p}queue:
+	category: music
+	description: Shows the queue of the server.
+	trigger:
+		if track event-bot is pSlaying in event-guild is set:
+			set {_looped} to 0
+			set {_q::*} to queue of event-guild
+			add "Current Song: %track event-bot is playing in event-guild% [%normalized track duration of track event-bot is playing in event-guil%]%nl%" to {_qlist::*}
+			loop 10 times:
+				add 1 to {_looped}
+				if {_q::%{looped}%} is set:
+					add "##%{_looped}%: %{_q::%{_looped}%}% [%normalized track duration of {_q::%{_looped}%}%]" to {_qlist::*}
+				else:
+					stop loop
+			make embed:
+				set author of the embed to "Queue"
+				set author icon of the embed to {@icon}
+				set title of the embed to "Song list"
+				set description of the embed to "Here is the queue: ```%nl%%join {_qlist::*} with nl%%nl%```"
+				set footer of the embed to {@footerText}
+				set footer icon of the embed to {@icon}
+				set color of the embed to {@purple}
+			reply to event-message using last made embed with event-bot
+		
+		else:
+			make embed:
+				set author of the embed to "Queue"
+				set author icon of the embed to {@icon}
+				set title of the embed to "Error!"
+				set description of the embed to "There are no songs in queue!"
+				set footer of the embed to {@footerText}
+				set footer icon of the embed to {@icon}
+				set color of the embed to {@red}
+			reply to event-message using last made embed with event-bot
+
+discord command {@p}shuffle:
+	category: music
+	description: Randomises the queue of the server.
+	trigger:
+		shuffle queue in event-guild with event-bot
+		make embed:
+			set author of the embed to "Shuffle"
+			set author icon of the embed to {@icon}
+			set title of the embed to "Queue shuffled!"
+			set description of the embed to "All the songs are randomized. You can see the new order using `{@p}queue`."
+			set footer of the embed to {@footerText}
+			set footer icon of the embed to {@icon}
+			set color of the embed to {@green}
+		reply to event-message using last made embed with event-bot
+
+import:
+	org.apache.commons.lang3.StringUtils
+
+function reloadSimilarity():
+	delete {similarity::*}
+	loop all discord commands:
+		add "%loop-value%" to {similarity::*}
+		add loop-value's discord aliases to {similarity::*}
+
+on load:
+	reloadSimilarity()
+
+on message receive:
+	if event-user is not a discord bot:
+		if "%event-message%" starts with "{@p}" or "{@p}":
+			set {_split::*} to ("%event-message%") split at " "
+			replace first "{@p}" with "" in {_split::1}
+			"%{similarity::*}%" does not contain "%{_split::1}%"
+			set {_best} to 0
+			loop {similarity::*}:
+				set {_n} to StringUtils.getJaroWinklerDistance(loop-value, "%{_split::1}%")*100
+				if {_n} > {_best}:
+					set {_best} to {_n}
+					set {_best::cmd} to loop-value
+			if {_best} >= 50:
+				set {best::%discord id of event-member%}
+				set {_row} to new buttons row
+				add new disabled button "cmd_sim" with style secondary with content "Best match (%{_best}%%%): {@p}%{_best::cmd}%" with emoji "white_check_mark" to buttons of {_row}
+				make embed:
+					set author of the embed to "Command Similarities"
+					set author icon of the embed to {@icon}
+					set title of the embed to "Similar command!"
+					set description of the embed to "That command doesn't exist.%nl%Although, I found a command which is similar to this: `{@p}%{_best::cmd}%`"
+					set footer of the embed to {@footerText}
+					set footer icon of the embed to {@icon}
+					set color of the embed to {@yellow}
+				reply to event-message with last made embed with mention true with event-bot with rows {_row}
+
+slash command effects <string> <string>:
+	description: Plays music in a user's VC.
+	guilds: 932659866110160936
+	#bots: DisTune
+	options:
+		1:
+			name: effectName
+			description: The effect name.
+		
+		2:
+			name: number
+			description: The value of the effect.
+	
+	trigger:
+		if arg 1 is not set:
+			set {_p} to yml value "effects.pitch" from file "plugins/DisTune/servers/%discord id of event-guild%.yml"
+			make embed:
+				set author of the embed to "Music Effects"
+				set author icon of the embed to {@icon}
+				set title of the embed to "Active Effects"
+				set description of the embed to ":deer: **Pitch** - %{_p}%"
+				set color of the embed to {@yellow}
+			reply with last made embed with event-bot
+		
+		if arg 1 = "pitch":
+			if arg 2 is set:
+				set yml value "effects.pitch" from file "plugins/DisTune/servers/%discord id of event-guild%.yml" to arg 2
+				set {_p} to yml value "effects.pitch" from file "plugins/DisTune/servers/%discord id of event-guild%.yml"
+				set audio pitch of event-guild to {_p}
+				make embed:
+					set author of the embed to "Music Effects"
+					set author icon of the embed to {@icon}
+					set title of the embed to "Changed pitch"
+					set description of the embed to "I changed the pitch to `%arg 2%`!%nl%This will take a few seconds to change."
+					set color of the embed to {@green}
+				reply with last made embed with event-bot
+
+discord command effects [<text>] [<string>]:
+	prefixes: {@p}
+	category: music
+	description: Adds effects to the song.
+	trigger:
+		#reply to event-message with "NOTE: At <t:1644501600>, ALL DisTune commands prefixed with `{@p}` will be removed, and will be replaced with slash commands instead. This is to cooperate with Discord enforcing slash commands in April. Thank you for understanding." with event-bot
+		if arg 1 is not set:
+			set {_p} to yml value "effects.pitch" from file "plugins/DisTune/servers/%discord id of event-guild%.yml"
+			make embed:
+				set author of the embed to "Music Effects"
+				set author icon of the embed to {@icon}
+				set title of the embed to "Active Effects"
+				set description of the embed to ":deer: **Pitch** - %{_p}%"
+				set footer of the embed to {@footerText}
+				set footer icon of the embed to {@icon}
+				set color of the embed to {@yellow}
+			reply to event-message using last made embed with event-bot
+		
+		if arg 1 = "pitch":
+			if arg 2 is set:
+				set yml value "effects.pitch" from file "plugins/DisTune/servers/%discord id of event-guild%.yml" to arg 2
+				set {_p} to yml value "effects.pitch" from file "plugins/DisTune/servers/%discord id of event-guild%.yml"
+				set audio pitch of event-guild to {_p}
+				make embed:
+					set author of the embed to "Music Effects"
+					set author icon of the embed to {@icon}
+					set title of the embed to "Changed pitch"
+					set description of the embed to "I changed the pitch to `%arg 2%`!%nl%This will take a few seconds to change."
+					set footer of the embed to {@footerText}
+					set footer icon of the embed to {@icon}
+					set color of the embed to {@green}
+				reply to event-message using last made embed with event-bot
+			
+discord command invite:
+	prefixes: {@p}
+	category: other
+	description: Sends a link to invite me!
+	trigger:
+		#reply to event-message with "NOTE: At <t:1644501600>, ALL DisTune commands prefixed with `{@p}` will be removed, and will be replaced with slash commands instead. This is to cooperate with Discord enforcing slash commands in April. Thank you for understanding." with event-bot
+		set {_row} to new buttons row
+		add new link button with url "https://discord.com/oauth2/authorize?client_id=919249309508206652&permissions=36759824&scope=bot" with style success with content "Invite DisTune!" with emoji ":link:" to buttons of {_row}
+		add new link button with url "https://discord.gg/vpjefqnRYR" with style success with content "Support Server" with emoji ":link:" to buttons of {_row}
+		make embed:
+			set author of the embed to "Invite DisTune"
+			set author icon of the embed to {@icon}
+			set title of the embed to "Invite me!"
+			set description of the embed to "To invite me, you can click on my profile and click **Add to server**, or click the button below.%nl%NOTE: If you want to add the bot to a server you don't own, you need to have **Manage Server** or **Administrator** permissions on that Discord server."
+			set footer of the embed to {@footerText}
+			set footer icon of the embed to {@icon}
+			set color of the embed to {@purple}
+		reply to event-message with last made embed with event-bot with rows {_row}
+
+discord command servers:
+	prefixes: {@p}
+	trigger:
+		#reply to event-message with "NOTE: At <t:1644501600>, ALL DisTune commands prefixed with `{@p}` will be removed, and will be replaced with slash commands instead. This is to cooperate with Discord enforcing slash commands in April. Thank you for understanding." with event-bot
+		set {_gl} to "%guilds of event-bot%"
+		replace all ", " and "and" in {_gl} with "|"
+		set {_g::*} to split {_gl} at "|"
+		make embed:
+			set author of the embed to "Servers"
+			set author icon of the embed to {@icon}
+			set title of the embed to "My servers"
+			set description of the embed to "%{_g::*}%"
+			set footer of the embed to {@footerText}
+			set footer icon of the embed to {@icon}
+			set color of the embed to {@purple}
+		reply to event-message with last made embed with event-bot
+		delete {_gl::*}
+		delete {_g::*}
+
+on bot join guild:
+	set {stayinchannel::%discord id of event-guild%} to false
+	set {accpetedTOS::%discord id of event-guild%} to false
+	set {readRules::%discord id of event-guild%} to false
+	set {_b} to self member of event-bot in event-guild
+	loop text channels of event-guild:
+		if {_b} has permission (view channel, message send) in {_b}:
+			set {_c} to loop-textchannel
+			stop loop
+	if {_c} is not set:
+		send "Cannot found an channel to send the message in %event-guild%" to console
+	set {_size} to size of guilds of bot named {@bot}
+	set presence of bot named {@bot} to playing "music in %{_size}% servers! | {@p}help"
+	set {_row} to new buttons row
+	add new button "onjoin_readrules" with style primary with content "Read Rules" with emoji "scroll" to buttons of {_row}
+	add new button "onjoin_acceptrules" with style success with content "Accept Rules" with emoji "white_check_mark" to buttons of {_row}
+	make embed:
+		set author of the embed to "Joined server"
+		set author icon of the embed to {@icon}
+		set title of the embed to "I joined the party!"
+		set description of the embed to "Yay! I have arrived fresh to your Discord server, **%event-guild%**! Here are tips to get you started:%nl%To setup your server, use `$setup`. This is required to use some functions of the bot.%nl%To play music in your VC, use `$play (song name|youtube url)`, we don't support spotify and soundcloud yet.%nl%For more commands, use `$help`.%nl%%nl%You must read DisTune's rules before using the bot. Click **Read Rules** to read the rules, and once you're done, click **Accept Rules** to use the bot."
+		set footer of the embed to {@footerText}
+		set footer icon of the embed to {@icon}
+		set color of the embed to {@purple}
+	send last made embed to {_c} with rows {_row} with bot named {@bot}
+
+discord command {@p}varreset:
+	trigger:
+		#reply to event-message with "NOTE: At <t:1644501600>, ALL DisTune commands prefixed with `{@p}` will be removed, and will be replaced with slash commands instead. This is to cooperate with Discord enforcing slash commands in April. Thank you for understanding." with event-bot
+		set {stayinchannel::%discord id of event-guild%} to false
+		set {accpetedTOS::%discord id of event-guild%} to false
+		set {readRules::%discord id of event-guild%} to false
+		set {setup::%discord id of event-guild%} to false
+		delete {setup.User::%discord id of event-guild%}
+		reply to event-message with "All variables for guild **%event-guild%** [%discord id of event-guild%] has been reset." with event-bot
+		stop
+
+discord command reset:
+	prefixes: {@p}
+	trigger:
+		#reply to event-message with "NOTE: At <t:1644501600>, ALL DisTune commands prefixed with `{@p}` will be removed, and will be replaced with slash commands instead. This is to cooperate with Discord enforcing slash commands in April. Thank you for understanding." with event-bot
+		if event-member has permission (manage server):
+			set {stayinchannel::%discord id of event-guild%} to false
+			set {accpetedTOS::%discord id of event-guild%} to false
+			set {readRules::%discord id of event-guild%} to false
+			set {setup::%discord id of event-guild%} to false
+			delete {setup.User::%discord id of event-guild%}
+			set {_row} to new buttons row
+			add new button "onjoin_readrules" with style primary with content "Read Rules" with emoji "scroll" to buttons of {_row}
+			add new button "onjoin_acceptrules" with style success with content "Accept Rules" with emoji "white_check_mark" to buttons of {_row}
+			make embed:
+				set author of the embed to "Joined server"
+				set author icon of the embed to {@icon}
+				set title of the embed to "I joined the party!"
+				set description of the embed to "Yay! I have arrived fresh to your Discord server, **%event-guild%**! Here are tips to get you started:%nl%To setup your server, use `$setup`. This is required to use some functions of the bot.%nl%To play music in your VC, use `$play (song name|youtube url)`, we don't support spotify and soundcloud yet.%nl%For more commands, use `$help`.%nl%%nl%You must read DisTune's rules before using the bot. Click **Read Rules** to read the rules, and once you're done, click **Accept Rules** to use the bot."
+				set footer of the embed to {@footerText}
+				set footer icon of the embed to {@icon}
+				set color of the embed to {@purple}
+			reply to event-message with last made embed with event-bot with rows {_row} 
+
+		else:
+			reply to event-message with "You need **manage server** to reset settings!"
+			stop
+
+on bot leave guild:
+	set {_size} to size of guilds of bot named {@bot}
+	set presence of bot named {@bot} to playing "music in %{_size}% servers! | {@p}help"
+
+discord command {@p}syncvars:
+	trigger:
+		#reply to event-message with "NOTE: At <t:1644501600>, ALL DisTune commands prefixed with `{@p}` will be removed, and will be replaced with slash commands instead. This is to cooperate with Discord enforcing slash commands in April. Thank you for understanding." with event-bot
+		if discord id of event-guild = "919252887694110740":
+			if discord id of event-member = "702044939520835587":
+				loop all guilds of event-bot:
+					set {stayinchannel::%discord id of loop-value%} to false
+				reply to event-message using "I have synced the stayinchannel variable to servers I am in! **(%{_guilds::*}%)**" with event-bot
+			
+			else:
+				reply to event-message using "You are not Cerial!" with event-bot
+		
+		else:
+			reply to event-message using "You need to be in the dev server to use this!" with event-bot
+
+discord command settings [<text>] [<text>]:
+	prefixes: {@p}
+	trigger:
+		#reply to event-message with "NOTE: At <t:1644501600>, ALL DisTune commands prefixed with `{@p}` will be removed, and will be replaced with slash commands instead. This is to cooperate with Discord enforcing slash commands in April. Thank you for understanding." with event-bot
+		if arg 1 = "stayinchannel" or "stay":
+			if arg 2 is not set:
+				reply to event-message using "The current setting for `stayinchannel` is **%{stayinchannel::%discord id of event-guild%}%**." with event-bot
+				stop
+			
+			if arg 2 = "true":
+				set {stayinchannel::%discord id of event-guild%} to true
+				make embed:
+					set author of the embed to "Settings"
+					set author icon of the embed to {@icon}
+					set title of the embed to "Set settings! <a:distune_checkmark:924010501892083732>"
+					set description of the embed to "I have set the setting `stayinchannel` to true! This means when a song ends, I will still stay in the same VC."
+					set footer of the embed to {@footerText}
+					set footer icon of the embed to {@icon}
+					set color of the embed to {@green}
+				reply to event-message using last made embed with event-bot
+			
+			if arg 2 = "false":
+				set {stayinchannel::%discord id of event-guild%} to false
+				make embed:
+					set author of the embed to "Settings"
+					set author icon of the embed to {@icon}
+					set title of the embed to "Set settings! <a:distune_checkmark:924010501892083732>"
+					set description of the embed to "I have set the setting `stayinchannel` to false! This means after 30 seconds, I will disconnect from the VC."
+					set footer of the embed to {@footerText}
+					set footer icon of the embed to {@icon}
+					set color of the embed to {@green}
+				reply to event-message using last made embed with event-bot
+			
+			if arg 2 is not "true" or "false":
+				make embed:
+					set author of the embed to "Settings"
+					set author icon of the embed to {@icon}
+					set title of the embed to "Error! <a:distune_tnt:924009888059899945>"
+					set description of the embed to "I expected **true** or **false** from this setting, but got **%arg 2%** instead.%nl%```applescript%nl%{@p}settings stayinchannel <true|false>%nl%```"
+					set footer of the embed to {@footerText}
+					set footer icon of the embed to {@icon}
+					set color of the embed to {@red}
+				reply to event-message using last made embed with event-bot
+
+discord command help:
+	prefixes: {@p}
+	trigger:
+		#reply to event-message with "NOTE: At <t:1644501600>, ALL DisTune commands prefixed with `{@p}` will be removed, and will be replaced with slash commands instead. This is to cooperate with Discord enforcing slash commands in April. Thank you for understanding." with event-bot
+		set {_row} to new buttons row
+		add new button "help_music" with style primary with content "Music Commands" with emoji "distune_music" to buttons of {_row}
+		add new button "help_other" with style primary with content "Other Commands" with emoji "flushed" to buttons of {_row}
+		make embed:
+			set author of the embed to "Help"
+			set author icon of the embed to {@icon}
+			set title of the embed to "Help Menu"
+			set description of the embed to "Welcome to the help menu!%nl%Select a category right now"
+			set footer of the embed to {@footerText}
+			set footer icon of the embed to {@icon}
+			set color of the embed to {@purple}
+		reply to event-message using last made embed with event-bot with rows {_row} and store it in {helpEmbed::%discord id of event-member%}
+		set {helpSession::%discord id of event-member%} to random 6 char string from charset `a-zA-Z0-9`
+
+on button click:
+	if {helpSession::%discord id of event-member%} is set:
+		set {_button} to event-button
+		if {_button} = "help_music":
+			loop all discord command:
+				if discord command category of loop-value = "music":
+					add "**{@p}%loop-value%** - %description of loop-value%" to {_e::*}
+			set {_brehmoment::*} to join {_e::*} with nl
+			make embed:
+				set author of the embed to "Help"
+				set author icon of the embed to {@icon}
+				set title of the embed to "Help - Music"
+				set description of the embed to "These are the commands in the **Music** category.%nl%%nl%%{_brehmoment::*}%"
+				set footer of the embed to {@footerText}
+				set footer icon of the embed to {@icon}
+				set color of the embed to {@purple}
+			reply with hidden last made embed
+		
+		if {_button} = "help_other":
+			loop all discord command:
+				if discord command category of loop-value = "other":
+					add "**{@p}%loop-value%** - %description of loop-value%" to {_e::*}
+			set {_brehmoment::*} to join {_e::*} with nl
+			make embed:
+				set author of the embed to "Help"
+				set author icon of the embed to {@icon}
+				set title of the embed to "Help - Music"
+				set description of the embed to "These are the commands in the **Other** category.%nl%%nl%%{_brehmoment::*}%"
+				set footer of the embed to {@footerText}
+				set footer icon of the embed to {@icon}
+				set color of the embed to {@purple}
+			reply with hidden last made embed
+		
+		else:
+			stop
+	
+	else:
+		make embed:
+			set author of the embed to "Help"
+			set author icon of the embed to {@icon}
+			set title of the embed to "Not your help session!"
+			set description of the embed to "To make a help session, simply type `{@p}help!`"
+			set footer of the embed to {@footerText}
+			set footer icon of the embed to {@icon}
+			set color of the embed to {@red}
+		reply with hidden last made embed
+		
+
+discord command meme:
+	prefixes: {@p}
+	trigger:
+		#reply to event-message with "NOTE: At <t:1644501600>, ALL DisTune commands prefixed with `{@p}` will be removed, and will be replaced with slash commands instead. This is to cooperate with Discord enforcing slash commands in April. Thank you for understanding." with event-bot
+		#if agreedToTOS(event-guild) = true:
+		send a request to "https://meme-api.herokuapp.com/gimme"
+		set {_input} to the last http response
+		set {_body} to {_input}'s body
+		copy json {_body} to {_output::*}
+		# The text below is debug mode. ONLY USE IT WHEN NEEDED.
+		#reply with "**NOTE: THIS COMMAND IS IN DEBUG.**"
+		#reply with "HTTP Output: `%{_body}%`"
+		#reply with "Skript Output: `%{_output::*}%`"
+		#wait 1 second
+		make embed:
+			set title of the embed to "%{_output::title}%"
+			set title url of the embed to "%{_output::postLink}%"
+			set footer of the embed to "Author: %{_output::author}%"
+			set image of the embed to "%{_output::url}%"
+			set color of the embed to yellow
+		reply with last created embed
+		wait 0.1 seconds
+		delete {_input}
+		delete {_body}
+		delete {_output::*}
+		#else:
+			#make embed:
+			#	set author of the embed to "Error"
+			#	set author icon of the embed to {@icon}
+			#	set title of the embed to "Rules not accepted!"
+			#	set description of the embed to "To use the bot, the person who invited me has to read & accept the rules."
+			#	set color of the embed to red
+			#reply with last created embed
+
+import:
+	org.bukkit.Bukkit
+	java.lang.System
+
+on load:
+	{WAS_RELOADING} is set
+	set {_v::*} to split {WAS_RELOADING} at "|"
+	set {_last} to {_v::3} parsed as number
+	retrieve message with id "%{_v::1}%" in (text channel with id "%{_v::2}%") and store it in {_msg}
+	set {_current} to System.currentTimeMillis()
+	set {_passed} to {_current} - {_last}
+	edit {_msg} to show ":white_check_mark: **Reloaded successfully! `(%floor({_passed} / 1000)%s)`**"
+	clear {WAS_RELOADING}
+
+discord command {@p}reload:
+	trigger:
+		#reply to event-message with "NOTE: At <t:1644501600>, ALL DisTune commands prefixed with `{@p}` will be removed, and will be replaced with slash commands instead. This is to cooperate with Discord enforcing slash commands in April. Thank you for understanding." with event-bot
+		if discord id of event-member = "702044939520835587":
+			reply to event-message with ":warning: **Reloading...**" with event-bot and store it in {_msg}
+			set {_current} to System.currentTimeMillis()
+			set {WAS_RELOADING} to "%discord id of {_msg}%|%discord id of event-channel%|%{_current}%"
+			#mass send " " 300 times
+			console command "/sk reload distune2"
+			stop
+		
+		else:
+			reply to event-message with "You need to be Cerial to execute this!" with event-bot
+			stop
+
+function agreedToTOS(g: guild) :: boolean:
+	set {_id} to discord id of {_g}
+	if {accpetedTOS::%{_id}%} = true:
+		return true
+	else:
+		return false
+
+discord command {@p}addons:
+	trigger:
+		#reply to event-message with "NOTE: At <t:1644501600>, ALL DisTune commands prefixed with `{@p}` will be removed, and will be replaced with slash commands instead. This is to cooperate with Discord enforcing slash commands in April. Thank you for understanding." with event-bot
+		if discord id of event-member = "702044939520835587":
+			set {_addons::*} to addons list
+			reply to event-message with "Addons: **%{_addons::*}%**" with event-bot
+		
+		else:
+			reply to event-message with "You need to be Cerial to execute this!" with event-bot
+			stop
+
+expression total ram in (gigabytes|gb):
+	get:
+		set {_tram} to total ram
+		set {_int} to first 1 characters of {_tram}
+		set {_gbram} to 1024 * {_int}
+		return {_gbram}
+
+expression free ram in (gigabytes|gb):
+	get:
+		set {_tram} to free ram
+		set {_int} to first 1 characters of {_tram}
+		set {_gbram} to 1024 * {_int}
+		return {_gbram}
+
+expression max ram in (gigabytes|gb):
+	get:
+		set {_tram} to max ram
+		set {_int} to first 1 characters of {_tram}
+		set {_gbram} to 1024 * {_int}
+		return {_gbram}
+
+discord command hardwareinfo:
+	prefixes: {@p}
+	category: other
+	description: View the hardware info of the PC that DisTune is running on.
+	trigger:
+		#reply to event-message with "NOTE: At <t:1644501600>, ALL DisTune commands prefixed with `{@p}` will be removed, and will be replaced with slash commands instead. This is to cooperate with Discord enforcing slash commands in April. Thank you for understanding." with event-bot
+		set {_b} to "%System.getProperties()%"
+		replace all "{" and "}" in {_b} with ""
+		set {_s::*} to {_b} split at ", "
+		set {_tram} to ((max ram)-(free ram))
+		set {_tramd} to ({_tram}/(free ram)*100)
+		# Replacers
+		replace all "java.vendor.version=" in {_s::44} with ""
+		replace all "os.name=" in {_s::12} with ""
+		make embed:
+			set author of the embed to "System"
+			set author icon of the embed to {@icon}
+			set title of the embed to "System Specs"
+			add inline field named "Memory (RAM)" with value "Used: **%{_tram}%MB (%{_tramd}%%%)**%nl%Max: **%total ram%MB**" to embed
+			set footer of the embed to {@footerText}
+			set footer icon of the embed to {@icon}
+			set color of the embed to {@purple}
+		reply to event-message with last made embed with event-bot
+		wait 0.1 seconds
+		delete {_tram}
+		delete {_tramd}
+
+on load:
+	loop all guilds of bot {@bot}:
+		add discord id of loop-value to {ids::*}
+		add loop-value to {guilds::*}
+		set {_size} to size of guilds of bot {@bot}
+
+	set {_looped} to 0
+	loop {_size} times:
+		add 1 to {_looped}
+		if file "plugins/DisTune/servers/%{ids::%{_looped}%}%.yml" doesn't exist:
+			create file "plugins/DisTune/servers/%{ids::%{_looped}%}%.yml"
+			send "[Console] Made yml file for guild %{guilds::%{_looped}%}% [ID: %{ids::%{_looped}%}%]" to console
+			set yml value "settings.stay" from file "plugins/DisTune/servers/%{ids::%{_looped}%}%.yml" to "true"
+			set yml value "settings.queuelimit" from file "plugins/DisTune/servers/%{ids::%{_looped}%}%.yml" to "unlimited"
+			set yml value "config.announcechannel" from file "plugins/DisTune/servers/%{ids::%{_looped}%}%.yml" to "unknown"
+			set yml value "effects.pitch" from file "plugins/DisTune/servers/%{ids::%{_looped}%}%.yml" to "1"
+	
+	wait 0.1 seconds
+	delete {_size}
+	delete {_looped}
+	delete {ids::*}
+	delete {guilds::*}
+
+on bot join guild:
+	if file "plugins/DisTune/servers/%discord id of event-guild%.yml" doesn't exist:
+		create file "plugins/DisTune/servers/%discord id of event-guild%.yml"
+		send "[Console] Made yml file for guild **%event-guild%** [ID: %discord id of event-guild%]" to console
+		set yml value "settings.stay" from file "plugins/DisTune/servers/%{ids::%{_looped}%}%.yml" to "true"
+		set yml value "settings.queuelimit" from file "plugins/DisTune/servers/%{ids::%{_looped}%}%.yml" to "unlimited"
+		set yml value "config.announcechannel" from file "plugins/DisTune/servers/%{ids::%{_looped}%}%.yml" to "unknown"
+		set yml value "effects.pitch" from file "plugins/DisTune/servers/%{ids::%{_looped}%}%.yml" to "1"
+		stop
+	
+	else:
+		stop
+
+on bot leave guild:
+	if file "plugins/DisTune/servers/%discord id of event-guild%.yml" exists:
+		delete file "plugins/DisTune/servers/%discord id of event-guild%.yml"
+		send "[Console] Deleted yml file for guild **%event-guild%** [ID: %discord id of event-guild%]" to console
+		stop
+	
+	else:
+		stop
+
+discord command {@p}ymltest:
+	trigger:
+		loop guilds of event-bot:
+			add discord id of loop-value to {_ids::*}
+		reply with "%{_ids::*}%"
+		wait 1 tick
+		delete {_ids::*}
+
+on file clear:
+	send "§cFile is (trying to) get wiped!" to console
+
+on skript load:
+	set {loaded} to now
+	set {loaded.Unix} to unix timestamp of now
+	set {loaded.Unix} to ceil({loaded.Unix})
+	set {upTime.Counter} to true
+	#set {calc} to difference between {loaded} and {unloaded}
+	#if {calc} < 5 minutes:
+	#	stop
+	#else:
+	set {upTime.s} to 0
+	set {upTime.m} to 0
+	set {upTime.h} to 0
+	set {upTime.d} to 0
+
+on skript unload:
+	set {unloaded} to now
+	set {unloaded.Unix} to unix timestamp of now
+	set {unloaded.Unix} to ceil({unloaded.Unix})
+	set {upTime.Counter} to false
+	delete {upTime.s}
+	delete {upTime.m}
+	delete {upTime.h}
+	delete {upTime.d}
+
+every second:
+	if {upTime.Counter} = true:
+		add 1 to {upTime.s}
+		if {upTime.s} = 60:
+			set {upTime.s} to 0
+			add 1 to {upTime.m}
+		
+		if {upTime.m} = 60:
+			set {upTime.m} to 0
+			add 1 to {upTime.h}
+		
+		if {upTime.h} = 24:
+			set {upTime.h} to 0
+			add 1 to {upTime.d}
+	
+	else:
+		stop
+
+
+discord command {@p}uptime:
+	trigger:
+		if {upTime.Counter} = true:
+			make embed:
+				set author of the embed to "Uptime"
+				set author icon of the embed to {@icon}
+				set title of the embed to "Uptime Counter"
+				set description of the embed to "**DisTune** has been up for **%{upTime.d} ? 0%** days, **%{upTime.h} ? 0%** hours, **%{upTime.m} ? 0%** minutes and **%{upTime.s} ? 0%** seconds.%nl%Last started up <t:%{loaded.Unix}%:R> (<t:%{loaded.Unix}%>, in your local time)%nl%Last shut down <t:%{unloaded.Unix}%:R> (<t:%{unloaded.Unix}%>, in your local time)"
+				set footer of the embed to {@footerText}
+				set footer icon of the embed to {@icon}
+				set color of the embed to {@purple}
+			reply to event-message with last made embed with event-bot
+				
+		else:
+			reply to event-message with "Sorry, the uptime counter isn't active :(" with event-bot
+
+discord command {@p}reload:
+	trigger:
+		if discord id of event-member = "702044939520835587":
+			reply with ":warning: **Reloading...**" and store it in {msg}
+			set {_current} to System.currentTimeMillis()
+			set {WAS_RELOADING} to "%discord id of {_msg}%|%discord id of event-channel%|%{_current}%"
+			console command "/sk reload %script%"
+			stop
+
+on script load:
+	{WAS_RELOADING} is set
+	set {_v::*} to split {WAS_RELOADING} at "|"
+	set {_last} to {_v::3} parsed as number
+	retrieve message with id "%{_v::1}%" in (text channel with id "%{_v::2}%") and store it in {_msg}
+	set {_current} to System.currentTimeMillis()
+	set {_passed} to {_current} - {_last}
+	edit {msg} to show ":white_check_mark: **Restarted successfully! `(%floor({_passed} / 1000)%s)`**"
+	clear {WAS_RELOADING}
+
+discord command {@p}restart:
+	trigger:
+		if discord id of event-member = "702044939520835587":
+			reply to event-message with "Restarting in 3..." with event-bot
+			wait 1 second
+			reply with "2..."
+			wait 1 second
+			reply with "1..."
+			wait 1 second
+			reply with ":warning: **Restarting... (may take a while)**" and store it in {msg}
+			wait 0.1 seconds
+			set {_current} to System.currentTimeMillis()
+			set {restart_WAS_RELOADING} to "%discord id of {_msg}%|%discord id of event-channel%|%{_current}%"
+			restart server
+			stop
+		
+		else:
+			reply to event-message with "You need to be Cerial to execute this!" with event-bot
+			stop
+
+
+on skript load:
+	{restart_WAS_RELOADING} is set
+	set {_v::*} to split {restart_WAS_RELOADING} at "|"
+	set {_last} to {_v::3} parsed as number
+	retrieve message with id "%{_v::1}%" in (text channel with id "%{_v::2}%") and store it in {_msg}
+	set {_current} to System.currentTimeMillis()
+	set {_passed} to {_current} - {_last}
+	edit {msg} to show ":white_check_mark: **Restarted successfully! `(%floor({_passed} / 1000)%s)`**"
+	clear {restart_WAS_RELOADING}
+
+discord command ping:
+	prefixes: {@p}
+	trigger:
+		reply to event-message with "Pong! :ping_pong: The ping of DisTune is **%bot ping of event-bot%ms**!" with event-bot
+
+discord command {@p}reloadyml:
+	trigger:
+		if discord id of event-member = "702044939520835587":
+			loop all guilds of bot {@bot}:
+				add discord id of loop-value to {ids::*}
+				add loop-value to {guilds::*}
+				set {_size} to size of guilds of bot {@bot}
+
+			set {_looped} to 0
+			loop {_size} times:
+				add 1 to {_looped}
+				send "[Console] Changing YAML values (executed by %event-user%)"
+				set yml value "settings.stay" from file "plugins/DisTune/servers/%{ids::%{_looped}%}%.yml" to "true"
+				set yml value "settings.queuelimit" from file "plugins/DisTune/servers/%{ids::%{_looped}%}%.yml" to "unlimited"
+				set yml value "config.announcechannel" from file "plugins/DisTune/servers/%{ids::%{_looped}%}%.yml" to "unknown"
+				set yml value "config.prefix" from file "plugins/DisTune/servers/%{ids::%{_looped}%}%.yml" to "{@p}"
+				set yml value "effects.pitch" from file "plugins/DisTune/servers/%{ids::%{_looped}%}%.yml" to "1"
+			
+			reply to event-message with "Reloaded all configs successfully!" with event-bot
+
+discord command {@p}dev [<text>] [<integer>] [<text>]:
+	trigger:
+		if discord id of event-member = "702044939520835587" or "410781931727486976":
+			if arg 1 = "updateyml.servers":
+				loop all guilds of bot {@bot}:
+					add discord id of loop-value to {ids::*}
+					add loop-value to {guilds::*}
+					set {_size} to size of guilds of bot {@bot}
+
+				set {_looped} to 0
+				loop {_size} times:
+					add 1 to {_looped}
+					send "[Console] Changing YAML values (executed by %event-user%)"
+					set yml value "settings.stay" from file "plugins/DisTune/servers/%{ids::%{_looped}%}%.yml" to "true"
+					set yml value "settings.queuelimit" from file "plugins/DisTune/servers/%{ids::%{_looped}%}%.yml" to "unlimited"
+					set yml value "config.announcechannel" from file "plugins/DisTune/servers/%{ids::%{_looped}%}%.yml" to "unknown"
+					set yml value "config.prefix" from file "plugins/DisTune/servers/%{ids::%{_looped}%}%.yml" to "{@p}"
+					set yml value "effects.pitch" from file "plugins/DisTune/servers/%{ids::%{_looped}%}%.yml" to "1"
+				
+				reply to event-message with "Reloaded all configs successfully!" with event-bot
+
+			if arg 1 = "music.force":
+				if arg 2 is set:
+					if arg 3 is set:
+						stop queue in event-guild with event-bot
+						search for arg 3 on youtube and store it in {_r::*}
+						play {_r::1} in guild with id "%arg 2%" with event-bot
+						reply to event-message with "song.force is a success" with event-bot
+					
+					else:
+						reply to event-message with "error.nourl" with event-bot
+				
+				else:
+					reply to event-message with "error.noguildid" with event-bot
+
+on message receive:
+	if author of event-message is not a bot:
+		set {_m::*} to mentioned members of event-message
+		set {_b} to self member of {@bot} in event-guild
+		if {_m::*} contains {_b}:
+			reply to event-message with "Hey! My prefix in this server is `{@p}`! All commands use that prefix!" with event-bot
+			stop
+
+discord command {@p}downloadfile [<text>]:
+	trigger:
+		if discord id of event-member = "702044939520835587" or "410781931727486976":
+			if arg 1 is set:
+				reply to event-message with "Downloading file **%arg 1%**..." with event-bot
+				upload file "%arg 1%" to event-channel with event-bot
+			
+			else:
+				reply to event-message with "Please set the full directory of the file. Exmaple: ""plugins/Skript/config.sk""."
+				stop
+		
+		else:
+			reply to event-message with "You need to be Cerial or Emir to use this command!"
+			stop
+	
+
+discord command {@p}info [<text>]:
+	aliases: information
+	trigger:
+		if arg 1 is not set:
+			make embed:
+				set author of the embed to "Information"
+				set author icon of the embed to {@icon}
+				set title of the embed to "DisTune information"
+				set description of the embed to "DisTune was a little project made by Cerial, which actually turned out to be worked hard on.%nl%The bot is coded in [Skript](https://youtu.be/3QUPFxifJuQ?t=17) (click on Skript to learn more).%nl%The server is hosted 24/7 using a 2nd pc laying around running Ubuntu Server.%nl%Please enjoy using my bot.%nl%%nl%To get specific information, please make sure to include a topic:%nl%%nl%**ban** - DisTune server & user ban info"
+				add field named "Total Servers I am in" with value "%size of guilds of event-bot% servers (view a list of them using `{@p}servers`.)" to embed
+				set {_c} to size of all discord commands
+				add field named "Total commands" with value "**%{_c}%** commands registered (view 'em using `$help`)" to embed
+				set footer of the embed to {@footerText}
+				set footer icon of the embed to {@icon}
+				set color of the embed to {@purple}
+			reply to event-message with last made embed with event-bot
+		
+		if arg 1 = "ban":
+			make embed:
+				set author of the embed to "Information"
+				set author icon of the embed to {@icon}
+				set title of the embed to "DisTune Ban information"
+				set description of the embed to "Now, DisTune has a few set of rules in place, just to keep stuff clean.%nl%DisTune will automatically monitor some commands to our monitoring system (use `$info monitor` for more info about that topic).%nl%Let's say we are monitoring the play command (we are btw), the moderation team receives all the info about the track; length, name, url, ect."
+				set footer of the embed to {@footerText}
+				set footer icon of the embed to {@icon}
+				set color of the embed to {@purple}
+			reply to event-message with last made embed with event-bot
+
+effect mass send %message% %integer% times to %channel% with %-bot%:
+	trigger:
+		loop expr-2 times:
+			send "%expr-1%" to expr-3 with expr-4
+
+function buttonDebug(c: string, b: string):
+	send ":warning: __Debug__%nl%Button name: %{_b}%" to channel with id {_c} with bot {@bot}
+
+discord command {@p}support:
+	trigger:
+		set {_row} to new buttons row
+		add new button "support_appeal" with style primary with content "Appeal user/server ban" with emoji "hammer" to buttons of {_row}
+		add new button "support_other" with style primary with content "Other" with emoji "flushed" to buttons of {_row}
+		make embed:
+			set author of the embed to "Support"
+			set author icon of the embed to {@icon}
+			set title of the embed to "Select Topic"
+			set description of the embed to "Please select from one of the options below.%nl%%betaCommand()%"
+			set footer of the embed to {@footerText}
+			set footer icon of the embed to {@icon}
+			set color of the embed to {@purple}
+		reply to event-message with last made embed with event-bot with rows {_row}
+
+on button click:
+	#buttonDebug(discord id of event-channel, event-button)
+	if event-button = "support_appeal":
+		#defer the interaction
+		reply with hidden "You've got mail!"
+		make embed:
+			set author of the embed to "Support"
+			set author icon of the embed to {@icon}
+			set title of the embed to "Support session started"
+			set description of the embed to "You picked to get support for: **Appeals**"
+			add field named "Info" with value "**User Appeals**%nl%If you are user banned (you can't use some features of DisTune), then you need to send the template below to me.%nl%You can check any info about your ban using `$status` in any Discord server with DisTune.%nl%**NOTE: Not following the template will result in an instant denial of the appeal.**%nl%```%nl%-USER BAN APPEAL- (INCLUDE THIS PART)%nl%%nl%Ban reason:%nl%Your ban ID:%nl%Why should you be unbanned:%nl%```%nl%**Server Appeals**%nl%If you are an owner of a Discord server which is DisTune banned, use this appeal.%nl%**NOTE 1: Not following the template will result in an instant denial of the appeal.**%nl%**NOTE 2: Please do not appeal for the owners, we can check the owner of the server you are trying to appeal for.**%nl%```%nl%-SERVER BAN APPEAL- (INCLUDE THIS PART)%nl%%nl%Server ID (right-click server > copy id):%nl%Ban reason:%nl%Server ban ID:%nl%Why should you be unbanned:%nl%```%nl%Happy appealing!" to embed
+			set footer of the embed to {@footerText}
+			set footer icon of the embed to {@icon}
+			set color of the embed to {@purple}
+		send embed to event-user with bot {@bot}
+		
+
+discord command {@p}profile [<user>]:
+	aliases: bal, balance
+	trigger:
+		if file "plugins/DisTune/userdata/%discord id of event-member%.yml" doesn't exist:
+			make embed:
+				set author of the embed to "Economy"
+				set author icon of the embed to {@icon}
+				set title of the embed to "Profile"
+				set description of the embed to "Setting up your profile, please wait..."
+				set footer of the embed to {@footerText}
+				set footer icon of the embed to {@icon}
+				set color of the embed to {@yellow}
+			reply to event-message with last made embed with event-bot and store it in {_pmsg}
+			wait 5 second
+			create file "plugins/DisTune/userdata/%discord id of event-member%.yml"
+			set yml value "coins.pocket" from file "plugins/DisTune/userdata/%discord id of event-member%.yml" to 0
+			set yml value "coins.bank" from file "plugins/DisTune/userdata/%discord id of event-member%.yml" to 0
+			make embed:
+				set author of the embed to "Economy"
+				set author icon of the embed to {@icon}
+				set title of the embed to "Profile"
+				set description of the embed to "Profile made successfully!%nl%Note: If you want to request your data at anytime, execute `{@p}requestdata`."
+				set footer of the embed to {@footerText}
+				set footer icon of the embed to {@icon}
+				set color of the embed to {@green}
+			edit {_pmsg} with last made embed
+			stop
+	
+
+		else:
+			if arg 1 is not set:
+				set {_coins.p::%discord id of event-member%} to yml value "coins.pocket" from file "plugins/DisTune/userdata/%discord id of event-member%.yml"
+				set {_coins.b::%discord id of event-member%} to yml value "coins.bank" from file "plugins/DisTune/userdata/%discord id of event-member%.yml"
+				set {_lang::%discord id of event-member%} to yml value "user.language" from file "plugins/DisTune/userdata/%discord id of event-member%.yml"
+				set {_badges::%discord id of event-member%::*} to yml list "badges" from file "plugins/DisTune/userdata/%discord id of event-member%.yml"
+				if {_coins.p::%discord id of event-member%} is not set:
+					set yml value "coins.pocket" from file "plugins/DisTune/userdata/%discord id of event-member%.yml" to 0
+					reply to event-message with "I have encountered an error with your data file! It should work now!" with event-bot
+				
+				if {_coins.b::%discord id of event-member%} is not set:
+					set yml value "coins.bank" from file "plugins/DisTune/userdata/%discord id of event-member%.yml" to 0
+					reply to event-message with "I have encountered an error with your data file! It should work now!" with event-bot
+				
+				if {_badges::%discord id of event-member%::*} is not set:
+					add "none" to yml list "badges" from file "plugins/DisTune/userdata/%discord id of event-member%.yml"
+					reply to event-message with "I have encountered an error with your data file! It should work now!" with event-bot
+
+				else if {_badges::%discord id of event-member%::*} is set:
+					replace all ", " and "and " in {_badges::%discord id of event-member%::*} with ""
+
+				make embed:
+					set author of the embed to "Economy"
+					set author icon of the embed to {@icon}
+					set title of the embed to "Profile"
+					set thumbnail of the embed to "%avatar of event-member%"
+					set description of the embed to "This is your profile currently:"
+					if {_badges::%discord id of event-member%::*} is set:
+						add field named "Badges (use {@p}badges for more info about them)" with value "%{_badges::%discord id of event-member%::*}%" to embed
+					add field named "TuneBucks in wallet :money_with_wings:" with value "**%{_coins.p::%discord id of event-member%}%** TuneBucks" to embed
+					add field named "TuneBucks in bank :moneybag:" with value "**%{_coins.b::%discord id of event-member%}%** TuneBucks" to embed
+					set footer of the embed to {@footerText}
+					set footer icon of the embed to {@icon}
+					set color of the embed to {@purple}
+				reply to event-message with last made embed with event-bot
+			
+			else:
+				if file "plugins/DisTune/userdata/%discord id of arg 1%.yml" doesn't exist:
+					make embed:
+						set author of the embed to "Economy"
+						set author icon of the embed to {@icon}
+						set title of the embed to "Error!"
+						set description of the embed to "%mention tag of arg 1% doesn't have a profile! They need to register one using `$profile`!"
+						set footer of the embed to {@footerText}
+						set footer icon of the embed to {@icon}
+						set color of the embed to {@purple}
+					reply to event-message with last made embed with event-bot
+				else:
+					set {_coins.p::%discord id of arg 1%} to yml value "coins.pocket" from file "plugins/DisTune/userdata/%discord id of arg 1%.yml"
+					set {_coins.b::%discord id of arg 1%} to yml value "coins.bank" from file "plugins/DisTune/userdata/%discord id of arg 1%.yml"
+					make embed:
+						set author of the embed to "Economy"
+						set author icon of the embed to {@icon}
+						set title of the embed to "Profile"
+						set thumbnail of the embed to "%avatar of arg 1%"
+						set description of the embed to "This is %mention tag of arg 1%'s profile currently:"
+						add field named "TuneBucks in wallet :money_with_wings:" with value "**%{_coins.p::%discord id of arg 1%}%** TuneBucks" to embed
+						add field named "TuneBucks in bank :moneybag:" with value "**%{_coins.b::%discord id of arg 1%}%** TuneBucks" to embed
+						set footer of the embed to {@footerText}
+						set footer icon of the embed to {@icon}
+						set color of the embed to {@purple}
+					reply to event-message with last made embed with event-bot
+			
+
+		delete {_coins.p::%discord id of event-member%}
+		delete {_coins.b::%discord id of event-member%}
+		delete {_coins.p::%discord id of arg 1%}
+		delete {_coins.b::%discord id of arg 1%}
+
+discord command {@p}givebadge [<user>] [<text>] [<text>]:
+	trigger:
+		if discord id of event-member = "702044939520835587" or "410781931727486976":
+			if arg 1 is not set:
+				reply to event-message with "Usage: ```%nl%{@p}givebadge <user> <add|remove> <all|dev|mod|vip>%nl%```" with event-bot
+				stop
+			if arg 2 is not set:
+				reply to event-message with "Usage: ```%nl%{@p}givebadge <user> <add|remove> <all|dev|mod|vip>%nl%```" with event-bot
+				stop
+			if arg 3 is not set:
+				reply to event-message with "Usage: ```%nl%{@p}givebadge <user> <add|remove> <all|dev|mod|vip>%nl%```" with event-bot
+				stop
+			else:
+				if file "plugins/DisTune/userdata/%discord id of arg 1%.yml" doesn't exist:
+					reply to event-message with "%arg 1% doesn't have a profile yet!" with event-bot
+					stop
+				else:
+					if arg 1 is set:
+						if arg 2 = "remove":
+							if arg 3 = "all":
+								remove "<:distune_dev:944275107512205362>", "<:distune_mod:944275110087499836>" and "<:distune_vip:944276202473009202>" from yml list "badges" from file "plugins/DisTune/userdata/%discord id of arg 1%.yml"
+								add "none" to yml list "badges" from file "plugins/DisTune/userdata/%discord id of arg 1%.yml"
+								reply to event-message with "You have removed all of %mention tag of arg 1% **[%discord id of arg 1%]**'s badges." with event-bot
+								send "All of your badges have been removed by %mention tag of event-member% **[%discord id of event-member%]**." to user with id "%discord id of arg 1%" with event-bot
+							
+							if arg 3 = "dev":
+								remove "<:distune_dev:944275107512205362>" from yml list "badges" from file "plugins/DisTune/userdata/%discord id of arg 1%.yml"
+								reply to event-message with "You have removed the **Bot Developer** badge." with event-bot
+								send "Your **Bot Developer** badge has been removed by %mention tag of event-member% **[%discord id of event-member%]**." to user with id "%discord id of arg 1%" with event-bot
+							
+							if arg 3 = "mod":
+								remove "<:distune_mod:944275110087499836>" from yml list "badges" from file "plugins/DisTune/userdata/%discord id of arg 1%.yml"
+								reply to event-message with "You have removed the **Bot Moderator** badge." with event-bot
+								send "Your **Bot Moderator** badge has been removed by %mention tag of event-member% **[%discord id of event-member%]**." to user with id "%discord id of arg 1%" with event-bot
+							
+
+							if arg 3 = "vip":
+								remove "<:distune_vip:944276202473009202>" from  yml list "badges" from file "plugins/DisTune/userdata/%discord id of arg 1%.yml"
+								reply to event-message with "You have removed the **Bot Developer** badge." with event-bot
+								send "Your **VIP** badge has been removed by %mention tag of event-member% **[%discord id of event-member%]**." to user with id "%discord id of arg 1%" with event-bot
+						
+						if arg 2 = "add":
+							if arg 3 = "all":
+								remove "none" from yml list "badges" from file "plugins/DisTune/userdata/%discord id of arg 1%.yml"
+								add "<:distune_dev:944275107512205362>", "<:distune_mod:944275110087499836>" and "<:distune_vip:944276202473009202>" from yml list "badges" from file "plugins/DisTune/userdata/%discord id of arg 1%.yml"
+								reply to event-message with "You have added all badges to %mention tag of arg 1% **[%discord id of arg 1%]**'s profile." with event-bot
+								send "All of the badges have been added to your profile by %mention tag of event-member% **[%discord id of event-member%]**." to user with id "%discord id of arg 1%" with event-bot
+							
+							if arg 3 = "dev":
+								add "<:distune_dev:944275107512205362>" to yml list "badges" from file "plugins/DisTune/userdata/%discord id of arg 1%.yml"
+								reply to event-message with "You have added the **Bot Developer** badge to %mention tag of arg 1% **[%discord id of arg 1%]**'s profile." with event-bot
+								send "Your **Bot Developer** badge has been added by %mention tag of event-member% **[%discord id of event-member%]**." to user with id "%discord id of arg 1%" with event-bot
+							
+							if arg 3 = "mod":
+								add "<:distune_mod:944275110087499836>" to yml list "badges" from file "plugins/DisTune/userdata/%discord id of arg 1%.yml"
+								reply to event-message with "You have added the **Bot Moderator** badge to %mention tag of arg 1% **[%discord id of arg 1%]**'s profile." with event-bot
+								send "Your **Bot Moderator** badge has been added by %mention tag of event-member% **[%discord id of event-member%]**." to user with id "%discord id of arg 1%" with event-bot
+							
+
+							if arg 3 = "vip":
+								add "<:distune_vip:944276202473009202>" to yml list "badges" from file "plugins/DisTune/userdata/%discord id of arg 1%.yml"
+								reply to event-message with "You have added the **VIP** badge to %mention tag of arg 1% **[%discord id of arg 1%]**'s profile." with event-bot
+								send "Your **VIP** badge has been added by %mention tag of event-member% **[%discord id of event-member%]**." to user with id "%discord id of arg 1%" with event-bot
+						
+
+discord command {@p}givebucks [<text>] [<integer>] [<user>]:
+	trigger:
+		if discord id of event-member = "702044939520835587" or "410781931727486976":
+			if arg 1 = "wallet":
+				if arg 2 is set:
+					if arg 3 is not set:
+						set yml value "coins.pocket" from file "plugins/DisTune/userdata/%discord id of event-member%.yml" to arg 2
+						reply to event-message with "Set your TuneBucks in your wallet to **%arg 2%**." with event-bot
+						stop
+					
+					else:
+						set yml value "coins.pocket" from file "plugins/DisTune/userdata/%discord id of arg 3%.yml" to arg 2
+						reply to event-message with "Set %mention tag of arg 3%'s TuneBucks in their wallet to **%arg 2%**." with event-bot
+						stop
+				
+				else:
+					reply to event-message with "You need to set the amount of TuneBucks I need to add!" with event-bot
+					stop
+			
+			if arg 1 = "bank":
+				if arg 2 is set:
+					if arg 3 is not set:
+						set yml value "coins.bank" from file "plugins/DisTune/userdata/%discord id of event-member%.yml" to arg 2
+						reply to event-message with "Set your TuneBucks in your bank to **%arg 2%**." with event-bot
+						stop
+					
+					else:
+						set yml value "coins.bank" from file "plugins/DisTune/userdata/%discord id of arg 3%.yml" to arg 2
+						reply to event-message with "Set %mention tag of arg 3%'s TuneBucks in their bank to **%arg 2%**." with event-bot
+						stop
+				
+				else:
+					reply to event-message with "You need to set the amount of TuneBucks I need to add!" with event-bot
+					stop
+					
+discord command {@p}changelanguage:
+	aliases: שנהשפה
+	trigger:
+		set {_lang::%discord id of event-member%} to yml value "user.language" from file "plugins/DisTune/userdata/%discord id of event-member%.yml"
+		reply to event-message with "%{_lang::%discord id of event-member%}%" with event-bot
+		if {_lang::%discord id of event-member%} = "english":
+			set yml value "user.language" from file "plugins/DisTune/userdata/%discord id of event-member%.yml" to "hebrew"
+			reply to event-message with "שיניתי את השפה לעברית! כדי לשנות חזרה לאנגלית, כתבו `{@p}שנהשפה`." with event-bot
+			stop
+		
+		if {_lang::%discord id of event-member%} = "hebrew"
+			set yml value "user.language" from file "plugins/DisTune/userdata/%discord id of event-member%.yml" to "english"
+			reply to event-message with "I changed the language to Englsh! To change it back to Hebrew, type `{@p}changelanguage`." with event-bot
+			stop
+
+discord command {@p}test:
+	trigger:
+		set {_t} to unix timestamp of now
+		set {_t} to ceil({_t})
+		reply to event-message with "<t:%{_t}%>"
+
+discord command {@p}volume [<integer>]:
+	trigger:
+		if arg 1 is set:
+			if arg 1 <= 100:
+				set {_v} to arg 1 parsed as a number
+				set track volume of event-guild to {_v}
+				reply to event-message with "Set volume to **%arg 1%**%%." with event-bot
+			
+			else:
+				reply to event-message with "The maximum volume is 100%%." with event-bot
+				stop
+
+discord command {@p}gayrate [<string>]:
+	trigger:
+		if arg 1 is not set:
+			set {_u} to event-member
+		else:
+			set {_u} to arg 1
+		set {_g} to random integer between 0 and 100
+		make embed:
+			set title of the embed to "Gay rate"
+			set description of the embed to "Calculating, please wait..."
+			set footer of the embed to {@footerText}
+			set footer icon of the embed to {@icon}
+			set color of the embed to {@purple}
+		reply to event-message with last made embed with event-bot and store it in {_e}
+		wait 1 second
+		if {_g} > 50:
+			set {_msg} to "They might be onto something!"
+		else if {_g} = 69:
+			set {_msg} to "Nice number!"
+		else:
+			set {_msg} to "Good, you can be calm!"
+		make embed:
+			set title of the embed to "Gay rate"
+			set description of the embed to "**%{_u}%** is **%{_g}%%%** gay :rainbow_flag:. %{_msg}%"
+			set footer of the embed to {@footerText}
+			set footer icon of the embed to {@icon}
+			set color of the embed to {@green}
+		edit {_e} with last made embed
+
+discord command {@p}yescat:
+	trigger:
+		make embed:
+			set author of the embed to "Meme commands"
+			set author icon of the embed to {@icon}
+			set title of the embed to "Yes cat"
+			set image of the embed to "https://c.tenor.com/dwHqzBdYWl0AAAAd/cat-yes.gif"
+			set footer of the embed to {@footerText}
+			set footer icon of the embed to {@icon}
+			set color of the embed to {@green}
+		reply to event-message with last made embed with event-bot
+
+function betaCommand() :: string:
+	return "**NOTE: This command is currently in beta. Please report any issues using {@p}report.**"
+
+discord command {@p}badges:
+	trigger:
+		make embed:
+			set author of the embed to "Collectibles"
+			set author icon of the embed to {@icon}
+			set title of the embed to "Badges"
+			set description of the embed to "Badges make your profile stand out."
+			add field named "<:distune_dev:944275107512205362> - Developer" with value "This badge is given to the bot developers; Cerial and Emir.%nl%No one else can receive this badge." to embed
+			add field named "<:distune_mod:944275110087499836> - Moderator" with value "This badge is given to the bot moderators.%nl%They are the one responsible for support and user and server bans." to embed
+			add field named "<:distune_vip:944276202473009202> - VIP" with value "This badge is given to the people which are important to me.%nl%This would be people from my family, some online and all irl friends, ect." to embed
+			set footer of the embed to {@footerText}
+			set footer icon of the embed to {@icon}
+			set color of the embed to {@purple}
+		reply to event-message with last made embed with event-bot
+
+
+
+discord command {@p}userinfo [<user>]:
+	trigger:
+		if arg 1 is not set:
+			set {_nick} to nickname of event-member
+			if {_nick} = event-user:
+				set {_nick} to "Not nicked!"
+			
+			if event-user is not a bot:
+				set {_isbot} to "Not a bot!"
+			else:
+				set {_isbot} to "This is a bot!"
+			make embed:
+				set author of the embed to "Information"
+				set author icon of the embed to {@icon}
+				set title of the embed to "User Info"
+				add inline field named "Username & Tag" with value "%event-user%##%discriminator of event-user%" to embed
+				add inline field named "User ID" with value "%discord id of event-user%" to embed
+				add inline field named "Server Nickname" with value "%{_nick}%" to embed
+				add inline field named "Bot Status" with value "%{_isbot}%" to embed
+				add inline field named "Account Creation Date" with value "%creation date of event-member%" to embed
+				add inline field named "Server join Date" with value "%join date of event-member%" to embed
+				add inline field named "Roles (%size of roles of event-member%)" with value "%roles of event-member%" to embed
+				add inline field named "Online Status" with value "%online status of event-user%" to embed
+				set thumbnail of the embed to avatar of event-user
+				set footer of the embed to {@footerText}
+				set footer icon of the embed to {@icon}
+				set color of the embed to {@purple}
+			reply to event-message with last made embed with event-bot
+		
+		else:
+			set {_nick} to nickname of arg 1
+			if {_nick} = arg 1:
+				set {_nick} to "Not nicked!"
+			
+			else if {_nick} is not set:
+				set {_nick} to "Not nicked!"
+			
+			if arg 1 is not a bot:
+				set {_isbot} to "Not a bot!"
+			else:
+				set {_isbot} to "This is a bot!"
+			make embed:
+				set author of the embed to "Information"
+				set author icon of the embed to {@icon}
+				set title of the embed to "User Info"
+				add inline field named "Username & Tag" with value "%arg 1%##%discriminator of arg 1%" to embed
+				add inline field named "User ID" with value "%discord id of arg 1%" to embed
+				add inline field named "Server Nickname" with value "%{_nick}%" to embed
+				add inline field named "Bot Status" with value "%{_isbot}%" to embed
+				add inline field named "Join Date" with value "%join date of arg 1%" to embed
+				add inline field named "Roles (%size of roles of arg 1%)" with value "%roles of arg 1%" to embed
+				add inline field named "Online Status" with value "%online status of arg 1%" to embed
+				set thumbnail of the embed to avatar of arg 1
+				set footer of the embed to {@footerText}
+				set footer icon of the embed to {@icon}
+				set color of the embed to {@purple}
+			reply to event-message with last made embed with event-bot
+
+discord command {@p}manageapps [<string>] [<string>]:
+	category: staff
+	trigger:
+		if event-member has permission (administrator):
+			if arg 1 is not set:
+				make embed:
+					set author of the embed to "Staff Applications"
+					set author icon of the embed to {@icon}
+					set title of the embed to "Application commands"
+					set description of the embed to "**<>** - important arguments, **[]** - optional arguments"
+					add field named "{@p}manageapps create <application name>" with value "Creates a new application. Max of 10 questions." to embed
+					add field named "{@p}manageapps list" with value "Lists all applications." to embed
+					add field named "{@p}manageapps edit <application name>" with value "Edit the application. You can edit, delete or add questions and edit the application name." to embed
+					add field named "{@p}manageapps delete <application name>" with value "Delete an application."  to embed
+					set footer of the embed to {@footerText}
+					set footer icon of the embed to {@icon}
+					set color of the embed to {@purple}
+				reply to event-message with last made embed with event-bot
+		
+			if arg 1 = "create":
+				if arg 2 is set:
+					add "%arg 2%" to yml list "applications.list" from file "plugins/DisTune/servers/%discord id of event-guild%.yml"
+					add "none" to yml list "applications.questions.%arg 2%" from file "plugins/DisTune/servers/%discord id of event-guild%.yml"
+					make embed:
+						set author of the embed to "Staff Applications"
+						set author icon of the embed to {@icon}
+						set title of the embed to "Application created!"
+						set description of the embed to "You have made the application **%arg 2%**. Other users cannot apply with this application until you finish editing your questions."
+						set footer of the embed to {@footerText}
+						set footer icon of the embed to {@icon}
+						set color of the embed to {@green}
+					reply to event-message with last made embed with event-bot
+					
+				else:
+					make embed:
+						set author of the embed to "Staff Applications"
+						set author icon of the embed to {@icon}
+						set title of the embed to "Error!"
+						set description of the embed to "Please set a name for your application.%nl%Usage: ```%nl%{@p}manageapps create <application name>%nl%```"
+						set footer of the embed to {@footerText}
+						set footer icon of the embed to {@icon}
+						set color of the embed to {@red}
+					reply to event-message with last made embed with event-bot
+			
+			if arg 1 = "list":
+				set {_apps::%discord id of event-guild%::*} to yml list "applications.list" from file "plugins/DisTune/servers/%discord id of event-guild%.yml"
+				if {_apps::%discord id of event-guild%::*} is not set:
+					make embed:
+						set author of the embed to "Staff Applications"
+						set author icon of the embed to {@icon}
+						set title of the embed to "Error!"
+						set description of the embed to "**%event-guild%** has no staff applications.%nl%To make one, use: ```%nl%{@p}manageapps create <application name>%nl%```"
+						set footer of the embed to {@footerText}
+						set footer icon of the embed to {@icon}
+						set color of the embed to {@red}
+					reply to event-message with last made embed with event-bot
+					stop
+				make embed:
+					set author of the embed to "Staff Applications"
+					set author icon of the embed to {@icon}
+					set title of the embed to "All applications in %event-guild%"
+					set description of the embed to "%{_apps::%discord id of event-guild%::*}%"
+					set footer of the embed to {@footerText}
+					set footer icon of the embed to {@icon}
+					set color of the embed to {@purple}
+				reply to event-message with last made embed with event-bot
+
+			if arg 1 = "edit":
+				if arg 2 is set:
+					set {_apps::%discord id of event-guild%::*} to yml list "applications.list" from file "plugins/DisTune/servers/%discord id of event-guild%.yml"
+					if {_apps::%discord id of event-guild%::*} doesn't contain arg 2:
+						make embed:
+							set author of the embed to "Staff Applications"
+							set author icon of the embed to {@icon}
+							set title of the embed to "No application with that name!"
+							set description of the embed to "An application named **%arg 2%** doesn't exist. Did you spell it correctly?"
+							set footer of the embed to {@footerText}
+							set footer icon of the embed to {@icon}
+							set color of the embed to {@red}
+						reply to event-message with last made embed with event-bot
+						stop
+					
+					else if {applications.Channel::%discord id of event-member%} is set:
+						make embed:
+							set author of the embed to "Staff Applications"
+							set author icon of the embed to {@icon}
+							set title of the embed to "You are editing an application!"
+							set description of the embed to "You already have an application editing channel! Please go to <##%{applications.Channel::%discord id of event-member%}%>, which is your application editing channel.%nl%If you would like to edit a different application, please type `exit editor` in the editing channel."
+							set footer of the embed to {@footerText}
+							set footer icon of the embed to {@icon}
+							set color of the embed to {@red}
+						reply to event-message with last made embed with event-bot
+						stop
+
+					set {applications.Editing::%discord id of event-member%} to arg 2
+					set {question::%discord id of event-member%} to false
+					make text channel named "%event-member%-edit-%arg 2%" in event-guild with event-bot and store it in {applications.ChannelS::%discord id of event-member%}
+					loop all members of event-guild:
+						revoke permission view channel to loop-value in channel {applications.ChannelS::%discord id of event-member%} with event-bot
+					allow permission view channel to event-member in channel {applications.ChannelS::%discord id of event-member%} with event-bot
+					set {applications.Channel::%discord id of event-member%} to discord id of {applications.ChannelS::%discord id of event-member%}
+					send "%mention tag of event-member%" to channel with id {applications.Channel::%discord id of event-member%} with event-bot and store it in {_tmsg}
+					wait 2 ticks
+					make embed:
+						set author of the embed to "Staff Applications"
+						set author icon of the embed to {@icon}
+						set title of the embed to "Edit chat commands"
+						set description of the embed to "We implemented a fast way to edit your application.%nl%You can type the following keywords in this channel:"
+						add field named "create new question" with value "This makes a new question." to embed
+						add field named "edit question" with value "This edits an existing question." to embed
+						add field named "delete question" with value "This deletes an existing question." to embed
+						add field named "list questions" with value "This shows all of the questions in this application." to embed
+						add field named "change application name" with value "This changes the current application's name." to embed
+						add field named "exit editor" with value "This deletes the current channel." to embed
+						set footer of the embed to {@footerText}
+						set footer icon of the embed to {@icon}
+						set color of the embed to {@purple}
+					send embed to channel with id {applications.Channel::%discord id of event-member%} with event-bot
+					wait 2 ticks
+					delete {applications.AllActions::%discord id of event-member%::*}
+					set {applications.LatestAction::%discord id of event-member%} to "Didn't do anything so far."
+					add {applications.LatestAction::%discord id of event-member%} to {applications.AllActions::%discord id of event-member%::*}
+					make embed:
+						set author of the embed to "Staff Applications"
+						set author icon of the embed to {@icon}
+						set title of the embed to "Latest actions"
+						set description of the embed to "In this embed, you can see the latest change you made to the application.%nl%%nl%:inbox_tray: **__Input:__** ```%nl%None%nl%```%nl%:outbox_tray: **__Output:__** ```%nl%%{applications.LatestAction::%discord id of event-member%}%%nl%```%nl%:file_folder: **__All Actions:__** ```%nl%%join {applications.AllActions::%discord id of event-member%::*} with nl%%nl%```"
+						set footer of the embed to {@footerText}
+						set footer icon of the embed to {@icon}
+						set color of the embed to {@purple}
+					send embed to channel with id {applications.Channel::%discord id of event-member%} with event-bot and store it in {applications.actionsEmbed::%discord id of event-member%}
+					wait 2 ticks
+					make embed:
+						set author of the embed to "Staff Applications"
+						set author icon of the embed to {@icon}
+						set title of the embed to "Edit application"
+						set description of the embed to "I have made a channel for you to edit the application.%nl%The channel is <##%{applications.Channel::%discord id of event-member%}%>."
+						set footer of the embed to {@footerText}
+						set footer icon of the embed to {@icon}
+						set color of the embed to {@purple}
+					reply to event-message with last made embed with event-bot and store it in {appEditG::%discord id of event-member%}
+		
+		else:
+			make embed:
+				set author of the embed to "Staff Applications"
+				set author icon of the embed to {@icon}
+				set title of the embed to "Error!"
+				set description of the embed to "You need **Administator** permission in your role. If ths is a mistake, please contact the owner of the server to give you perms.%nl%We are not resposible if they say no."
+				set footer of the embed to {@footerText}
+				set footer icon of the embed to {@icon}
+				set color of the embed to {@red}
+			reply to event-message with last made embed with event-bot
+
+function messageDebug(m: string):
+	send "&b&lDEBUG: &f%{_m}%" to console
+
+discord command {@p}exiteditor [<user>]:
+	trigger:
+		if discord id of event-member = "702044939520835587":
+			destroy text channel with id {applications.Channel::%discord id of arg 1%}
+			delete {applications.AllActions::%discord id of arg 1%::*}
+			delete {applications.Channel::%discord id of arg 1%}
+			delete {question::%discord id of arg 1%}
+			delete {applications.LatestAction::%discord id of arg 1%}
+			delete {applications.actionsEmbed::%discord id of arg 1%}
+			make embed:
+				set author of the embed to "Staff Applications"
+				set author icon of the embed to {@icon}
+				set title of the embed to "Destoyed session successfully!"
+				set description of the embed to "I have successfully deleted the editor session."
+				set footer of the embed to {@footerText}
+				set footer icon of the embed to {@icon}
+				set color of the embed to {@green}
+			reply to event-message with last made embed with event-bot
+		
+		else:
+			reply to event-message with "You must be Cerial to execute this command!" with event-bot
+
+on message receive:
+	event-user is not a bot
+	if discord id of event-channel = {applications.Channel::%discord id of event-member%}:
+		#messageDebug("variable exists")
+		set {_c} to content of event-message
+		destroy event-message
+		remove "Didn't do anything so far." from {applications.AllActions::%discord id of event-member%::*}
+		#messageDebug("message = %{_c}%")
+		if {question::%discord id of event-member%} = true:
+			set {question::%discord id of event-member%} to false
+			#messageDebug("new question is set")
+			remove "none" from yml list "applications.questions.%{applications.Editing::%discord id of event-member%}%" from file "plugins/DisTune/servers/%discord id of event-guild%.yml"
+			#messageDebug("removed none from the yml")
+			add "%{_c}%" to yml list "applications.questions.%{applications.Editing::%discord id of event-member%}%" from file "plugins/DisTune/servers/%discord id of event-guild%.yml"
+			set {_qlist::*} to yml list "applications.questions.%{applications.Editing::%discord id of event-member%}%" from file "plugins/DisTune/servers/%discord id of event-guild%.yml"
+			set {_questions} to size of {_qlist::*}
+			#messageDebug("added the question to the yml")
+			set {applications.LatestAction::%discord id of event-member%} to "Made new question ""%{_c}%"" (%{_questions}%/10 questions)"
+			#messageDebug("edited action")
+			add {applications.LatestAction::%discord id of event-member%} to {applications.AllActions::%discord id of event-member%::*}
+			make embed:
+				set author of the embed to "Staff Applications"
+				set author icon of the embed to {@icon}
+				set title of the embed to "Latest actions"
+				set description of the embed to "In this embed, you can see the latest change you made to the application.%nl%%nl%:inbox_tray: **__Input:__** ```%nl%%{_c}%%nl%```%nl%:outbox_tray: **__Output:__** ```%nl%%{applications.LatestAction::%discord id of event-member%}%%nl%```%nl%:file_folder: **__All Actions:__** ```%nl%%join {applications.AllActions::%discord id of event-member%::*} with nl%%nl%```"
+				set footer of the embed to {@footerText}
+				set footer icon of the embed to {@icon}
+				set color of the embed to {@purple}
+			edit {applications.actionsEmbed::%discord id of event-member%} with last made embed
+			#messageDebug("edited embed")
+			stop
+
+		else:
+			#messageDebug("its not a question")
+			if {_c} = "exit editor":
+				remove "Didn't do anything so far." from {applications.AllActions::%discord id of event-member%::*}
+				set {applications.LatestAction::%discord id of event-member%} to "Exiting editor, please wait..."
+				add {applications.LatestAction::%discord id of event-member%} to {applications.AllActions::%discord id of event-member%::*}
+				make embed:
+					set author of the embed to "Staff Applications"
+					set author icon of the embed to {@icon}
+					set title of the embed to "Latest actions"
+					set description of the embed to "In this embed, you can see the latest change you made to the application.%nl%%nl%:inbox_tray: **__Input:__** ```%nl%%{_c}%%nl%```%nl%:outbox_tray: **__Output:__** ```%nl%%{applications.LatestAction::%discord id of event-member%}%%nl%```%nl%:file_folder: **__All Actions:__** ```%nl%%join {applications.AllActions::%discord id of event-member%::*} with nl%%nl%```"
+					set footer of the embed to {@footerText}
+					set footer icon of the embed to {@icon}
+					set color of the embed to {@purple}
+				edit {applications.actionsEmbed::%discord id of event-member%} with last made embed
+				wait 3 second
+				make embed:
+					set author of the embed to "Staff Applications"
+					set author icon of the embed to {@icon}
+					set title of the embed to "Edit application"
+					set description of the embed to "You have closed the editor!"
+					set footer of the embed to {@footerText}
+					set footer icon of the embed to {@icon}
+					set color of the embed to {@red}
+				edit {appEditG::%discord id of event-member%} with last made embed
+				destroy text channel with id {applications.Channel::%discord id of event-member%}
+				delete {applications.AllActions::%discord id of event-member%::*}
+				delete {applications.Channel::%discord id of event-member%}
+				delete {question::%discord id of event-member%}
+				delete {applications.LatestAction::%discord id of event-member%}
+				delete {applications.actionsEmbed::%discord id of event-member%}
+
+			if {_c} = "distune.appedit.exit /nowait":
+				if discord id of event-member = "702044939520835587":
+					destroy text channel with id {applications.Channel::%discord id of event-member%}
+					delete {applications.AllActions::%discord id of event-member%::*}
+					delete {applications.Channel::%discord id of event-member%}
+					delete {question::%discord id of event-member%}
+					delete {applications.LatestAction::%discord id of event-member%}
+					delete {applications.actionsEmbed::%discord id of event-member%}
+				
+				else:
+					set {applications.LatestAction::%discord id of event-member%} to "Sorry, the --nowait argument is for Cerial only."
+					add {applications.LatestAction::%discord id of event-member%} to {applications.AllActions::%discord id of event-member%::*}
+					make embed:
+						set author of the embed to "Staff Applications"
+						set author icon of the embed to {@icon}
+						set title of the embed to "Latest actions"
+						set description of the embed to "In this embed, you can see the latest change you made to the application.%nl%%nl%:inbox_tray: **__Input:__** ```%nl%%{_c}%%nl%```%nl%:outbox_tray: **__Output:__** ```%nl%%{applications.LatestAction::%discord id of event-member%}%%nl%```%nl%:file_folder: **__All Actions:__** ```%nl%%join {applications.AllActions::%discord id of event-member%::*} with nl%%nl%```"
+						set footer of the embed to {@footerText}
+						set footer icon of the embed to {@icon}
+						set color of the embed to {@purple}
+					edit {applications.actionsEmbed::%discord id of event-member%} with last made embed
+			
+			if {_c} = "create new question":
+				set {_qlist::*} to yml list "applications.questions.%{applications.Editing::%discord id of event-member%}%" from file "plugins/DisTune/servers/%discord id of event-guild%.yml"
+				set {_questions} to size of {_qlist::*}
+				#messageDebug("there are %{_questions}% questions right now")
+				if {_questions} = 10:
+					set {question::%discord id of event-member%} to false
+					set {applications.LatestAction::%discord id of event-member%} to "Sorry, this application has reached a maximum of 10 questions!"
+					make embed:
+						set author of the embed to "Staff Applications"
+						set author icon of the embed to {@icon}
+						set title of the embed to "Latest actions"
+						set description of the embed to "In this embed, you can see the latest change you made to the application.%nl%%nl%:inbox_tray: **__Input:__** ```%nl%%{_c}%%nl%```%nl%:outbox_tray: **__Output:__** ```%nl%%{applications.LatestAction::%discord id of event-member%}%%nl%```%nl%:file_folder: **__All Actions:__** ```%nl%%join {applications.AllActions::%discord id of event-member%::*} with nl%%nl%```"
+						set footer of the embed to {@footerText}
+						set footer icon of the embed to {@icon}
+						set color of the embed to {@purple}
+					edit {applications.actionsEmbed::%discord id of event-member%} with last made embed
+					stop
+				else:
+					set {question::%discord id of event-member%} to true
+					set {applications.LatestAction::%discord id of event-member%} to "Please enter a question name below!"
+					make embed:
+						set author of the embed to "Staff Applications"
+						set author icon of the embed to {@icon}
+						set title of the embed to "Latest actions"
+						set description of the embed to "In this embed, you can see the latest change you made to the application.%nl%%nl%:inbox_tray: **__Input:__** ```%nl%%{_c}%%nl%```%nl%:outbox_tray: **__Output:__** ```%nl%%{applications.LatestAction::%discord id of event-member%}%%nl%```%nl%:file_folder: **__All Actions:__** ```%nl%%join {applications.AllActions::%discord id of event-member%::*} with nl%%nl%```"
+						set footer of the embed to {@footerText}
+						set footer icon of the embed to {@icon}
+						set color of the embed to {@purple}
+					edit {applications.actionsEmbed::%discord id of event-member%} with last made embed
+				
+			if {_c} = "list questions":
+				set {_qlist::*} to yml list "applications.questions.%{applications.Editing::%discord id of event-member%}%" from file "plugins/DisTune/servers/%discord id of event-guild%.yml"
+				remove "Didn't do anything so far." from {applications.AllActions::%discord id of event-member%::*}
+				set {applications.LatestAction::%discord id of event-member%} to "Listed all questions."
+				add {applications.LatestAction::%discord id of event-member%} to {applications.AllActions::%discord id of event-member%::*}
+				make embed:
+					set author of the embed to "Staff Applications"
+					set author icon of the embed to {@icon}
+					set title of the embed to "Latest actions"
+					set description of the embed to "In this embed, you can see the latest change you made to the application.%nl%%nl%:inbox_tray: **__Input:__** ```%nl%%{_c}%%nl%```%nl%:outbox_tray: **__Output:__** ```%nl%%{applications.LatestAction::%discord id of event-member%}%%nl%```%nl%:file_folder: **__All Actions:__** ```%nl%%join {applications.AllActions::%discord id of event-member%::*} with nl%%nl%```"
+					set footer of the embed to {@footerText}
+					set footer icon of the embed to {@icon}
+					set color of the embed to {@purple}
+				edit {applications.actionsEmbed::%discord id of event-member%} with last made embed
+				wait 0.1 seconds
+				make embed:
+					set author of the embed to "Staff Applications"
+					set author icon of the embed to {@icon}
+					set title of the embed to "Questions list"
+					set description of the embed to "**Note: This embed deletes itself in 10 seconds.**%nl%```%nl%%join {_qlist::*} with nl%%nl%```"
+					set footer of the embed to {@footerText}
+					set footer icon of the embed to {@icon}
+					set color of the embed to {@purple}
+				reply with last made embed and store it in {qlistEmbed::%discord id of event-member%}
+				wait 10 seconds
+				destroy {qlistEmbed::%discord id of event-member%}
+				delete {qlistEmbed::%discord id of event-member%}
+
+			else:
+				remove "Didn't do anything so far." from {applications.AllActions::%discord id of event-member%::*}
+				set {applications.LatestAction::%discord id of event-member%} to "Unknown command ""%{_c}%"". Check the message above for the commands list."
+				add {applications.LatestAction::%discord id of event-member%} to {applications.AllActions::%discord id of event-member%::*}
+				make embed:
+					set author of the embed to "Staff Applications"
+					set author icon of the embed to {@icon}
+					set title of the embed to "Latest actions"
+					set description of the embed to "In this embed, you can see the latest change you made to the application.%nl%%nl%:inbox_tray: **__Input:__** ```%nl%%{_c}%%nl%```%nl%:outbox_tray: **__Output:__** ```%nl%%{applications.LatestAction::%discord id of event-member%}%%nl%```%nl%:file_folder: **__All Actions:__** ```%nl%%join {applications.AllActions::%discord id of event-member%::*} with nl%%nl%```"
+					set footer of the embed to {@footerText}
+					set footer icon of the embed to {@icon}
+					set color of the embed to {@purple}
+				edit {applications.actionsEmbed::%discord id of event-member%} with last made embed
+
+discord command {@p}mclookup [<string>]:
+	trigger:
+		if arg 1 is set:
+			set {_p} to arg 1 parsed as an offline player
+			set {_u} to uuid of {_p}
+			if {_u} is not set:
+				make embed:
+					set author of the embed to "Minecraft"
+					set author icon of the embed to {@icon}
+					set title of the embed to "Username doesn't exist!"
+					set description of the embed to "The username **%arg 1%** doesn't exist. Try checking your spelling or checking a different username."
+					set footer of the embed to {@footerText}
+					set footer icon of the embed to {@icon}
+					set color of the embed to {@purple}
+				reply to event-message with last made embed with event-bot
+				stop
+				
+			make embed:
+				set author of the embed to "Minecraft"
+				set author icon of the embed to {@icon}
+				set title of the embed to "User Lookup"
+				set thumbnail of the embed to "https://minotar.net/armor/bust/%{_u}%/100.png"
+				add field named "Username" with value "%{_p}%" to embed
+				add field named "UUID" with value "%{_u}%" to embed
+				add field named "Skin" with value "[Click me to download!](https://minotar.net/download/%{_u}%)" to embed
+				set footer of the embed to {@footerText}
+				set footer icon of the embed to {@icon}
+				set color of the embed to {@purple}
+			reply to event-message with last made embed with event-bot
+
+
+discord command {@p}roast:
+	trigger:
+		set {_r} to text from url "https://insult.mattbas.org/api/insult.txt"
+		reply to event-message with "**NOTE: The roast might contain swear words and might be too harsh to view. Click the spoiler to proceed.**%nl%||%{_r}%||%nl%%nl%**Idea by Vian##7777**" with event-bot
+
+discord command {@p}botperms:
+	trigger:
+		set {_b} to self member of event-bot in event-guild
+		reply to event-message with "My permissions in **%event-guild%** are: **%permissions of {_b} in event-channel%**" with event-bot
+
+discord command {@p}penis [<string>]:
+	aliases: pp
+	trigger:
+		if arg 1 is not set:
+			set {_u} to event-member
+		else:
+			set {_u} to arg 1
+		set {_g::%discord id of event-member%} to random integer between 2 and 20
+		if {_g::%discord id of event-member%} = {previouspp::%discord id of event-member%}:
+			set {_g::%discord id of event-member%} to random integer between 2 and 20
+		loop {_g::%discord id of event-member%} times:
+			add "=" to {_pp1::%discord id of event-member%::*}
+		set {_pp2::%discord id of event-member%::*} to join {_pp1::%discord id of event-member%::*} with "|"
+		replace all "|" in {_pp2::%discord id of event-member%::*} with ""
+		make embed:
+			set title of the embed to "Penis size"
+			set description of the embed to "Calculating, please wait..."
+			set footer of the embed to {@footerText}
+			set footer icon of the embed to {@icon}
+			set color of the embed to {@purple}
+		reply to event-message with last made embed with event-bot and store it in {_e::%discord id of event-member%}
+		wait 1 second
+		make embed:
+			set title of the embed to "Penis size"
+			set description of the embed to "**%{_u}%**'s penis is **8%{_pp2::%discord id of event-member%::*}%D**"
+			set footer of the embed to {@footerText}
+			set footer icon of the embed to {@icon}
+			set color of the embed to {@green}
+		edit {_e::%discord id of event-member%} with last made embed
+		wait 0.1 seconds
+		set {previouspp::%discord id of event-member%} to {_g}
+		delete {_pp1::%discord id of event-member%::*}
+		delete {_pp2::%discord id of event-member%::*}
+
+discord command {@p}distuneban [<text>] [<string>]:
+	trigger:
+		if discord id of event-member = "702044939520835587":
+			if arg 1 = "guild":
+				stop current queue of event-guild
+				disconnect bot of event-guild
+				set {distuneBanned::%discord id of event-guild%} to true
+				send "Your server, **%event-guild%** is DisTune banned. Please use `{@p}support` to appeal your server ban." to user with id "%discord id of owner of event-guild%" with event-bot
+				reply to event-message with "DisTune banned **%event-guild%** [%discord id of event-guild%] successfully." with event-bot
+				stop
+
+function checkDistuneBan(g: guild) :: boolean:
+	if {distuneBanned::%discord id of {_g}%} = false:
+		return false
+	else:
+		return true
+
+function resetStatus():
+	set {_size} to size of guilds of bot named {@bot}
+	set presence of bot named {@bot} to playing "music in %{_size}% servers! | {@p}help"
+
+discord command {@p}setstatus [<string>] [<string>]:
+	trigger:
+		if arg 1 = "playing":
+			if arg 2 is set:
+				set presence of bot named {@bot} to playing "%arg 2% | {@p}help"
+				reply to event-message with "Look at me!" with event-bot
+				wait 10 seconds
+				resetStatus()
+			
+		
+		if arg 1 = "listening to":
+			if arg 2 is set:
+				set presence of bot named {@bot} to listening to "%arg 2% | {@p}help"
+				reply to event-message with "Look at me!" with event-bot
+				wait 10 seconds
+				resetStatus()
+		
+		if arg 1 = "watching":
+			if arg 2 is set:
+				set presence of bot named {@bot} to watching "%arg 2% | {@p}help"
+				reply to event-message with "Look at me!" with event-bot
+				wait 10 seconds
+				resetStatus()
+
+discord command {@p}twitter:
+	trigger:
+		set {_row} to new buttons row
+		add new link button with url "https://twitter.com/distune_bot" with style success with content "Go to Twitter" with emoji "twitter" to buttons of {_row}
+		make embed:
+			set author of the embed to "Twitter"
+			set author icon of the embed to {@icon}
+			set title of the embed to "My twitter!"
+			set description of the embed to "To go to my twitter, you can either click on the button below to go to my page, or just search **@distune_bot** on Twitter."
+			set footer of the embed to {@footerText}
+			set footer icon of the embed to {@icon}
+			set color of the embed to {@purple}
+		reply to event-message with last made embed with event-bot with rows {_row}
+
