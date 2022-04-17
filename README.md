@@ -1,14 +1,23 @@
-## DisTune
+# DisTune
 
-Hey, welcome to the official DisTune repo! I have considered for a while to make this open-source, so yeah!
-It just has the main file (distune2.sk), maybe i'll split it to multiple files, although I can't guarantee that.
+DisTune is a [Discord](https://discord.com/) bot made by Cerial!
 
-# How to install?
+I am packed with features, so you don't have to invite tons of bots just for them to do one thing.
 
-First of all, you need a Paper minecraft server (yes ik why am i hosting this in a minecraft server but whatever), you can get that [here](https://papermc.io/), then you need to install the server. I won't give you a full turorial just go to google or smth
+And the best part? It's open source, so you can look at my code!
 
-Then, install these plugins in the plugins folder:
+Now, you might freak out, but the bot is running on a Minecraft server using the [Skript](https://github.com/SkriptLang/Skript#readme) plugin. Skript is basically a compressed version of Java and makes it easier to develop DisTune.
 
-[Skript](https://github.com/SkriptLang/Skript/releases), [DiSky](https://github.com/SkyCraft78/DiSky3/actions/runs/1555876630), [skript-yaml](https://github.com/Sashie/skript-yaml/releases/tag/v1.3.2), [skUtilities](https://github.com/tim740/skUtilities/releases/tag/v0.9.2), [skript-reflect](https://github.com/TPGamesNL/skript-reflect/releases), [Reqn](https://github.com/btk5h/reqn/releases/tag/v1.2.3), [skRayFall](https://dev.bukkit.org/projects/skrayfall/files), [skQuery](https://github.com/SkQuery/SkQuery/releases) and [MundoSK](https://forums.skunity.com/resources/mundosk.69/)
+## How to install?
 
-Restart your server once you installed all of these plugins, then copy the distune2.sk code to a text editor, then make a new file named distune2.sk, then open the file and paste the code in there. Then do /sk reload distune2 and you should be good to go (there might be some errors, you can fix them if you wish or just ignore them).
+Well, if you want to try out DisTune on your own, you can easily do so!
+
+One easy way is by inviting the bot by clicking [here](), and enjoying the vanilla features or by making a Minecraft server to host DisTune on your own device.
+
+### Step 1
+
+Get a Minecraft server. I recommend a Paper server since it's fast and probably the only thing that's compatible.
+
+Anyways, go their webpage by clicking [here](https://papermc.io/) and going to the "Downloads" page.
+
+![https://i.imgur.com/dt6DNXt.png](dt6DNXt.png)
