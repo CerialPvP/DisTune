@@ -1,0 +1,24 @@
+{
+  "name": "distune",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/bot.js",
+  "scripts": {
+    "bot": "node ."
+  },
+  "keywords": [],
+  "author": "CerialPvP (oCerial)",
+  "license": "ISC",
+  "dependencies": {
+    "@discordjs/rest": "^1.1.0",
+    "better-sqlite3": "^7.6.2",
+    "chalk": "^4.1.2",
+    "discord-api-types": "^0.37.10",
+    "discord.js": "^14.3.0",
+    "dotenv": "^16.0.2",
+    "quick.db": "^9.0.6"
+  },
+  "devDependencies": {
+    "prettier": "2.7.1"
+  }
+}
