@@ -1,6 +1,6 @@
 ## DisTune
 
-This is the new version of DisTune, made fully on JavaScript with the help of the **discord.js** library.
+This is the new version of DisTune, made fully on JavaScript with the help of the **discord.js** NodeJS library.
 
 Interested in the Skript version? Visit the public archive [here](https://github.com/CerialPvP/distune-sk).
 
