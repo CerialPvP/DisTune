@@ -1,0 +1,14 @@
+{
+    "ignore": [
+        "database/**/database",
+        "package.json",
+        "package_lock.json",
+        ".gitignore",
+        "README.md"
+    ],
+    "verbose": true,
+    "watch": [
+        "src/"
+    ],
+    "ext": "js,json"
+}
