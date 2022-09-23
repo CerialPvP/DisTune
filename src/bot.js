@@ -24,5 +24,4 @@ for (const folder of functionFolders) {
 
 client.handleCommands();
 client.handleEvents();
-client.handleComponents();
 client.login(token_dev);
