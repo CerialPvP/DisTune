@@ -18,10 +18,16 @@ for (const folder of functionFolders) {
   const functionFiles = fs
     .readdirSync(`./src/functions/${folder}`)
     .filter((file) => file.endsWith("js"));
-  for (const file of functionFiles)
-    require(`./functions/${folder}/${file}`)(client);
+  for (const file of functionFiles) {
+    if (folder == "handlers") {
+      require(`./functions/${folder}/${file}`)(client)
+    } else {
+      require(`./functions/${folder}/${file}`)
+    }
+  }
 }
 
 client.handleCommands();
 client.handleEvents();
 client.login(token_dev);
+
