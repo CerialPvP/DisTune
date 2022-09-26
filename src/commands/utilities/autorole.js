@@ -50,6 +50,11 @@ module.exports = {
                 .setName("removerole")
                 .setDescription("Remove a role from Autorole.")
                 .addRoleOption(option => option.setName("role").setDescription("The role you want to add.").setRequired(true))
+        )
+        .addSubcommand(subcommand =>
+            subcommand
+                .setName("test")
+                .setDescription("Test if the autorole works.")
         ),
     
     async execute(interaction, client) {
@@ -140,6 +145,13 @@ module.exports = {
             const embed = new EmbedBuilder()
                 .setColor("Green").setTitle("Autorole - Removed role")
                 .setDescription(`The role ${role} has been removed from Autorole.\nNo one will receive this role.`)
+            return interaction.reply({embeds: [embed]})
+        } else if (subcmd == "test") {
+            interaction.client.emit("guildMemberAdd", interaction.member)
+
+            const embed = new EmbedBuilder()
+                .setColor("Green").setTitle("Autorole - Testing")
+                .setDescription("The test should have been performed.\nIf you have a logging channel, a message should have been sent there right now.")
             return interaction.reply({embeds: [embed]})
         }
     }
