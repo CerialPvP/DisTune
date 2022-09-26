@@ -4,12 +4,13 @@
  * bother with giving roles manually to people.
  */
 
-const { SlashCommandBuilder, SlashCommandSubcommandBuilder, EmbedBuilder } = require('discord.js')
+const { SlashCommandBuilder, SlashCommandSubcommandBuilder, EmbedBuilder, Embed } = require('discord.js')
 
 const { QuickDB } = require('quick.db')
 const db = new QuickDB({ filePath: `./database/autorole.sqlite` })
 
 module.exports = {
+    permission: "ADMINISTRATOR",
     data: new SlashCommandBuilder()
         .setName("autorole")
         .setDescription("Gives a role automatically to new members.")
@@ -37,9 +38,22 @@ module.exports = {
             subcommand
                 .setName("delete")
                 .setDescription("Deletes the Autorole data.")
+        )
+        .addSubcommand(subcommand => 
+            subcommand
+                .setName("addrole")
+                .setDescription("Add another role to Autorole.")
+                .addRoleOption(option => option.setName("role").setDescription("The role you want to add.").setRequired(true))
+        )
+        .addSubcommand(subcommand => 
+            subcommand
+                .setName("removerole")
+                .setDescription("Remove a role from Autorole.")
+                .addRoleOption(option => option.setName("role").setDescription("The role you want to add.").setRequired(true))
         ),
     
     async execute(interaction, client) {
+
         subcmd = interaction.options.getSubcommand()
 
 
@@ -48,26 +62,36 @@ module.exports = {
             const channel = await db.get(`${interaction.guild.id}_logchannel`)
             
             const roleArray = []
-            for (let role in roles) {
-                let pushRole = interaction.guild.roles.cache.find(r => r.id === role)
-                console.log(pushRole)
+            for (let loopRole in roles) {
+                // I know I am using this inefficiently but nothing else I can do
+                // loopRole returns index instead of snowflake
+                let pushRole = interaction.guild.roles.cache.get(roles[loopRole])
                 roleArray.push(pushRole)
             }
             
-            interaction.reply(`${roleArray} | ${roles}`)
+            let roleCond = false
+            if (roles == null) {roleCond = true}
+            else if (roles.length < 1) {roleCond = true}
+            
             const embed = new EmbedBuilder()
-                .setColor("Purple").setTitle("Autorole - Information")
+                .setColor("Blurple").setTitle("Autorole - Information")
                 .setDescription("Do you want to give any new members who join your server roles automatically?\nWell, you can with Autorole!\nAutorole automatically gives roles you tell me to give to any new member who joins.\nMake your **new members** feel honoured today.")
                 .addFields(
-                    { name: "Roles", value: `q${(roleArray.length >= 0)?roleArray:"No roles have been set up yet."}` },
-                    { name: "Logging Channel", value: `${(channel !== null)?interaction.guild.channels.cache.find(c => c.id === channel):"No log channel has been set."}` },
+                    { name: "Roles", value: `${(!roleCond)?roleArray:"No roles have been set up yet."}` },
+                    { name: "Logging Channel", value: `${(channel !== null)?interaction.guild.channels.cache.find(c => c.id === channel):"No log channel has been set."}`},
                 )
+            await interaction.reply({embeds: [embed]})
             
-            setTimeout(() => {
-                interaction.followUp({ embeds: [embed] })
-            }, 1500);
             
         } else if (subcmd == "setup") {
+            const getRole = await db.get(`${interaction.guild.id}_roles`)
+            if (getRole !== null) {
+                const errEmbed  = new EmbedBuilder()
+                    .setColor("Red").setTitle("Autorole - Already set up!")
+                    .setDescription("This server already has Autorole set up.\nDelete the autorole data first with `/autorole delete`, and run this command again.")
+                return interaction.reply({embeds: [errEmbed], ephemeral: true})
+            }
+
             const role = interaction.options.getRole("role")
             const channel = interaction.options.getChannel("logchannel")
 
@@ -77,7 +101,8 @@ module.exports = {
 
             const embed = new EmbedBuilder()
                 .setColor("Green").setTitle("Autorole - Setup Complete")
-                .setDescription(`**TIP: Do you want to give more than 1 role to a new member? Use \`/autorole addrole <role>\` to add a role to Autorole.**\nThe setup has been completed.\n**Automated role:** ${role}`)//${(channel !== null)?opchannelmsg:""}`)
+                .setDescription(`The setup has been completed.\n**Automated Role:** ${role}${(channel == null)?"":`\n**Logging Channel:** ${(channel == interaction.channel?`${channel} (this channel)`:channel)}`}`)
+                .setFooter({text: "TIP: Do you want to give more than 1 role to a new member? Use \`/autorole addrole <role>\` to add a role to Autorole."})
             interaction.reply({ embeds: [embed] })
         } else if (subcmd == "delete") {
             db.delete(`${interaction.guild.id}_roles`)
@@ -88,6 +113,35 @@ module.exports = {
                 .setDescription("This server's Autorole data has been deleted.\nWhen a new member joins, that new member will not receive any role.\nIf you want to set this up again, you may do `/autorole setup`.")
             
             interaction.reply({embeds: [embed]})
+        } else if (subcmd == "addrole") {
+            const role = interaction.options.getRole("role")
+
+            const dbRoles = await db.get(`${interaction.guild.id}_roles`)
+            for (const loopRole in dbRoles) {
+                if (dbRoles[loopRole] == role.id) {
+                    const errEmbed = new EmbedBuilder()
+                        .setColor("Red").setTitle("Role is in Autorole!")
+                        .setDescription(`The role ${role} is already in the Autorole.\nPlease specify another role, or remove this role with \`/autorole removerole <role>\`.`)
+                    return interaction.reply({embeds: [errEmbed]})
+                }   
+            }
+
+            db.push(`${interaction.guild.id}_roles`, role.id)
+
+            const embed = new EmbedBuilder()
+                .setColor("Green").setTitle("Autorole - Added role")
+                .setDescription(`The role ${role} has been added to Autorole.\nEvery new member will receive this role, along with the other ones.`)
+            return interaction.reply({embeds: [embed]})
+        } else if (subcmd == "removerole") {
+            const role = interaction.options.getRole("role")
+
+            db.pull(`${interaction.guild.id}_roles`, role.id)
+
+            const embed = new EmbedBuilder()
+                .setColor("Green").setTitle("Autorole - Removed role")
+                .setDescription(`The role ${role} has been removed from Autorole.\nNo one will receive this role.`)
+            return interaction.reply({embeds: [embed]})
         }
     }
 }
+
