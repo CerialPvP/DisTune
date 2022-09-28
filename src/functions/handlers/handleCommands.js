@@ -1,6 +1,6 @@
 const fs = require("fs");
 const chalk = require("chalk");
-const { REST, Routes } = require('discord.js')
+const { REST, Routes } = require('discord.js');
 
 module.exports = (client) => {
   client.handleCommands = async () => {
@@ -13,6 +13,8 @@ module.exports = (client) => {
         .readdirSync(`./src/commands/${folder}`)
         .filter((file) => file.endsWith(".js"));
       for (const file of commandFiles) {
+        if (file.startsWith('-')) {continue;}
+
         const command = require(`../../commands/${folder}/${file}`);
         commands.set(command.data.name, command);
         commandArray.push(command.data.toJSON());
