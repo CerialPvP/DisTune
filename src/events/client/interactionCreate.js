@@ -1,5 +1,6 @@
 const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, PermissionFlagsBits } = require("discord.js");
 const { loopCommands } = require('../../functions/utils/functions')
+const fs = require('fs')
 
 module.exports = {
     name: 'interactionCreate',
@@ -42,6 +43,38 @@ module.exports = {
                     else if (interaction.deferred) {return interaction.editReply({embeds: [embed], components: [new ActionRowBuilder().addComponents(button)]})}
                     else {return interaction.reply({embeds: [embed], components: [new ActionRowBuilder().addComponents(button)]})}
                 }, 350);
+            }
+        } else if (interaction.isButton()) {
+            var fileRequired = false
+            const folder = fs.readFileSync("./src/components")
+            for (const loopFolder in folder) {
+                const file = fs.readFileSync(`./src/components/${loopFolder}`).filter(file => file.endsWith('.js'))
+                for (const loopFile in file) {
+                    const reqFile = require(`../../components/${loopFolder}/${loopFile}`)
+                    if (reqFile.components) {fileRequired = true;console.log(`file required fo ${loopFile}`)}
+                }
+            }
+
+            if (fileRequired) {
+                const { buttons } = client
+                const { customId } = interaction
+                const button = buttons.get(customId)
+
+                if (!button) {
+                    const errEmbed = new EmbedBuilder()
+                        .setColor("Red").setTitle("Internal Button Error")
+                        .setDescription(`The button you just clicked doesn't have any action defined for it.\nPlease go to the support server [here](https://discord.gg/vpjefqnRYR) and report this.`)
+                    return interaction.reply({embeds: [errEmbed]})
+                }
+
+                try {
+                    await button.execute(interaction, client)
+                } catch (error) {
+                    const errEmbed2 = new EmbedBuilder()
+                        .setColor("Red").setTitle("Internal Button Error")
+                        .setDescription(`Do not worry, you did not do anything wrong!\nThe button you just clicked has some broken code that should be fixed.\nPlease go to the support server [here](https://discord.gg/vpjefqnRYR) and report this:\`\`\`\n${error}\`\`\``)
+                    return interaction.reply({embeds: [errEmbed2]})
+                }
             }
         }
     }
