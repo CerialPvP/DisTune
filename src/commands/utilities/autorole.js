@@ -66,6 +66,13 @@ module.exports = {
     async execute(interaction, client) {
 
         subcmd = interaction.options.getSubcommand()
+        const r = await db.get(`${interaction.guild.id}_roles`)
+        if (!r && subcmd !== "setup") {
+            const embed = new EmbedBuilder()
+                .setColor("Red").setTitle("No Autorole set up!")
+                .setDescription("The Autorole in this server has not been set up yet.\nTo set it up, do `/autorole setup`.")
+            return await interaction.reply({embeds: [embed], ephemeral: true})
+        }
 
 
         if (subcmd == "info") {
