@@ -34,6 +34,8 @@ module.exports = {
         }
 
         const filtered = choices.filter(choice => choice.startsWith(focused.value))
+        // ty emir for this fix btw
+        if (filtered.length > 15) filtered.length = 15
         await interaction.respond(
             filtered.map(choice => ({name: choice, value: choice}))
         );
