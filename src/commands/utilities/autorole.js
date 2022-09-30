@@ -4,16 +4,22 @@
  * bother with giving roles manually to people.
  */
 
-const { SlashCommandBuilder, SlashCommandSubcommandBuilder, EmbedBuilder, Embed } = require('discord.js')
+const { SlashCommandBuilder, SlashCommandSubcommandBuilder, EmbedBuilder, Embed, PermissionFlagsBits } = require('discord.js')
 
 const { QuickDB } = require('quick.db')
 const db = new QuickDB({ filePath: `./database/autorole.sqlite` })
 
+// Comamnd name & description
+var name = "autorole"
+var desc = "Gives a role automatically to new members."
+
 module.exports = {
-    permission: "ADMINISTRATOR",
+    name: name,
+    description: desc,
+    permission: PermissionFlagsBits.Administrator,
     data: new SlashCommandBuilder()
-        .setName("autorole")
-        .setDescription("Gives a role automatically to new members.")
+        .setName(name)
+        .setDescription(desc)
         .addSubcommand(subcommand =>
             subcommand
                 .setName("info")
@@ -68,8 +74,6 @@ module.exports = {
             
             const roleArray = []
             for (let loopRole in roles) {
-                // I know I am using this inefficiently but nothing else I can do
-                // loopRole returns index instead of snowflake
                 let pushRole = interaction.guild.roles.cache.get(roles[loopRole])
                 roleArray.push(pushRole)
             }
@@ -78,12 +82,13 @@ module.exports = {
             if (roles == null) {roleCond = true}
             else if (roles.length < 1) {roleCond = true}
             
+            const getChannel = interaction.guild.channels.cache.find(c => c.id === channel)
             const embed = new EmbedBuilder()
                 .setColor("Blurple").setTitle("Autorole - Information")
                 .setDescription("Do you want to give any new members who join your server roles automatically?\nWell, you can with Autorole!\nAutorole automatically gives roles you tell me to give to any new member who joins.\nMake your **new members** feel honoured today.")
                 .addFields(
                     { name: "Roles", value: `${(!roleCond)?roleArray:"No roles have been set up yet."}` },
-                    { name: "Logging Channel", value: `${(channel !== null)?interaction.guild.channels.cache.find(c => c.id === channel):"No log channel has been set."}`},
+                    { name: "Logging Channel", value: `${(channel !== null)?`${(interaction.channel == getChannel)?`${getChannel} (this channel)`:getChannel}`:"No log channel has been set."}`},
                 )
             await interaction.reply({embeds: [embed]})
             
