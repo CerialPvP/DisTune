@@ -8,6 +8,10 @@ module.exports = {
     loopCommands: loopCommands,
 }
 
+/**
+ * Get all of the commands.
+ * @returns The commands
+ */
 function loopCommands() {
     const loopCommandsObj = [];
 
