@@ -1,4 +1,4 @@
-const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, PermissionFlagsBits } = require("discord.js");
+const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, PermissionFlagsBits, InteractionType, Embed } = require("discord.js");
 const { loopCommands } = require('../../functions/utils/functions')
 const fs = require('fs')
 
@@ -44,37 +44,25 @@ module.exports = {
                     else {return interaction.reply({embeds: [embed], components: [new ActionRowBuilder().addComponents(button)]})}
                 }, 350);
             }
-        } else if (interaction.isButton()) {
-            var fileRequired = false
-            const folder = fs.readFileSync("./src/components")
-            for (const loopFolder in folder) {
-                const file = fs.readFileSync(`./src/components/${loopFolder}`).filter(file => file.endsWith('.js'))
-                for (const loopFile in file) {
-                    const reqFile = require(`../../components/${loopFolder}/${loopFile}`)
-                    if (reqFile.components) {fileRequired = true;console.log(`file required fo ${loopFile}`)}
-                }
-            }
+        } else if (interaction.isAutocomplete()) {
+            const { commands } = client
+            const { commandName } = interaction
+            const command = commands.get(commandName)
+            if (!command) return;
 
-            if (fileRequired) {
-                const { buttons } = client
-                const { customId } = interaction
-                const button = buttons.get(customId)
+            try {
+                await command.autocomplete(interaction, client)
+            } catch (error) {
+                console.error(error)
+                const button = new ButtonBuilder()
+                    .setURL("https://discord.gg/vpjefqnRYR")
+                    .setStyle(ButtonStyle.Link)
+                    .setLabel("Join Support Server");
 
-                if (!button) {
-                    const errEmbed = new EmbedBuilder()
-                        .setColor("Red").setTitle("Internal Button Error")
-                        .setDescription(`The button you just clicked doesn't have any action defined for it.\nPlease go to the support server [here](https://discord.gg/vpjefqnRYR) and report this.`)
-                    return interaction.reply({embeds: [errEmbed]})
-                }
-
-                try {
-                    await button.execute(interaction, client)
-                } catch (error) {
-                    const errEmbed2 = new EmbedBuilder()
-                        .setColor("Red").setTitle("Internal Button Error")
-                        .setDescription(`Do not worry, you did not do anything wrong!\nThe button you just clicked has some broken code that should be fixed.\nPlease go to the support server [here](https://discord.gg/vpjefqnRYR) and report this:\`\`\`\n${error}\`\`\``)
-                    return interaction.reply({embeds: [errEmbed2]})
-                }
+                const embed = new EmbedBuilder()
+                    .setColor("Red").setTitle("Internal Autocomplete Error")
+                    .setDescription(`Do not worry, you did not do anything wrong!\nAn error regarding the autocomplete of the command \`${commandName}\` has occured.\nContact support immediately by joining the support Discord by clicking the button below. \`\`\`\n${error}\`\`\``)
+                return interaction.channel.send({content: `${interaction.member}`, embeds: [embed], components: [new ActionRowBuilder().addComponents(button)]})
             }
         }
     }
