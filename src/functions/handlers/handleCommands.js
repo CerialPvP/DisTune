@@ -26,7 +26,7 @@ module.exports = (client) => {
     try {
         console.log(chalk.yellowBright("Applying all commands to Discord API..."))
 
-        await rest.put(Routes.applicationGuildCommands('944574368279822378', '932659866110160936'), {
+        await rest.put(Routes.applicationCommands('944574368279822378'), {
             body: commandArray,
         });
 
