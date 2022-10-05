@@ -18,7 +18,7 @@ module.exports = {
 
         const getLogChannel = await db.get(`${guild.id}_logchannel`)
         const logchannel = guild.channels.cache.get(getLogChannel)
-        if (logchannel !== null) {
+        if (logchannel) {
             const embed = new EmbedBuilder()
                 .setColor("Yellow").setTitle("New member joined!")
                 .setDescription(`**Member:** ${member}\n**Roles Given:** ${roleObj}`)
