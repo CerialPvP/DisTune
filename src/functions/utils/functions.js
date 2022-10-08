@@ -6,6 +6,7 @@ const fs = require('fs')
 
 module.exports = {
     loopCommands: loopCommands,
+    randomNumber: randomNumber
 }
 
 /**
@@ -24,4 +25,17 @@ function loopCommands() {
         }
     }
     return loopCommandsObj;
+}
+
+/**
+ * Gets a random number from 1 to a custom amount.
+ * @param {Number} min The lowest number you want to generate.
+ * @param {Number} max The highest number you want to generate.
+ * @returns {Number} The random number.
+ */
+
+function randomNumber(min, max) {
+    const rand = Math.floor(Math.random()*(max-min+1))+min
+    console.log(rand)
+    return rand;
 }
