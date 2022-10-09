@@ -1,3 +1,9 @@
+/**
+ * DISCLAIMER: Emir made the eval code, not me.
+ * He kindly gave me the eval code, so instead of thanking me, thank him.
+ * Now, you can continue reading this.
+ */
+
 const { SlashCommandBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, ComponentType } = require("discord.js")
 //const { developers } = require("../config.json")
 
