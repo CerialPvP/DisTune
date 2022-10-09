@@ -20,6 +20,6 @@ rules:
     - error
     - never
   no-unused-vars:
-    - 1
+    - 0
   no-undef:
-    - 1
+    - 0
