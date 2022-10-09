@@ -6,7 +6,9 @@ const fs = require("fs")
 
 module.exports = {
     loopCommands: loopCommands,
-    randomNumber: randomNumber
+    randomNumber: randomNumber,
+    booleanToTrad: booleanToTrad,
+    betterJoin: betterJoin,
 }
 
 /**
@@ -38,4 +40,35 @@ function randomNumber(min, max) {
     const rand = Math.floor(Math.random()*(max-min+1))+min
     console.log(rand)
     return rand
+}
+
+/**
+ * Convert a boolean to a simple "Yes" or "No".
+ * @param {Boolean} bool 
+ * @param {Boolean} capital 
+ */
+
+function booleanToTrad(bool, capital) {
+    /** @type {String} */
+    let returnBool
+
+    if (bool) returnBool = "yes"
+    else if (!bool) returnBool = "no"
+
+    // Capitilize
+    if (capital) {
+        const low = returnBool.toLowerCase()
+        return returnBool[0].toUpperCase + low.slice(1)
+
+    } else {return returnBool}
+}
+
+/**
+ * "Joins" the object with a custom string. For example: "obj 1, obj 2"
+ * @param {Object} obj The object you want to join.
+ * @param {String} char The charater you want to connect the object.
+ * @returns {String} The final joined object.
+ */
+function betterJoin(obj, char) {
+    return `${obj.join(char)}`
 }
