@@ -2,8 +2,8 @@
  * A command which gives a list of all commands.
  */
 
-const { SlashCommandBuilder, EmbedBuilder, SelectMenuBuilder, SelectMenuOptionBuilder, ActionRowBuilder, parseResponse } = require('discord.js')
-const { loopCommands } = require('../../functions/utils/functions')
+const { SlashCommandBuilder, EmbedBuilder, SelectMenuBuilder, SelectMenuOptionBuilder, ActionRowBuilder, parseResponse } = require("discord.js")
+const { loopCommands } = require("../../functions/utils/functions")
 
 var name = "help"
 var desc = "A command which gives a list of all commands."
@@ -23,11 +23,11 @@ module.exports = {
         let choices = []
 
         if (focused.name == "command") {
-            const cmdHandler = loopCommands();
+            const cmdHandler = loopCommands()
             for (cmd in cmdHandler) {
-                const s = cmdHandler[cmd].split(';')
+                const s = cmdHandler[cmd].split(";")
                 const split = s[1].replace(".js", "")
-                if (split.startsWith("-")) continue;
+                if (split.startsWith("-")) continue
                 
                 choices.push(split)
             }
@@ -38,32 +38,32 @@ module.exports = {
         if (filtered.length > 15) filtered.length = 15
         await interaction.respond(
             filtered.map(choice => ({name: choice, value: choice}))
-        );
+        )
     },
 
     async execute(interaction, client) {
         const cmdOp = interaction.options.getString("command")
-        let category;
+        let category
 
         if (cmdOp !== null) {
-            const cmdHandler = loopCommands();
-            var exists = false;
+            const cmdHandler = loopCommands()
+            var exists = false
             for (cmd in cmdHandler) {
-                const s = cmdHandler[cmd].split(';')
+                const s = cmdHandler[cmd].split("")
                 const split = s[1].replace(".js", "")
-                if (split.startsWith("-")) continue;
+                if (split.startsWith("-")) continue
                 if (cmdOp == split) {
-                    exists = true;
-                    category = require(`../${s[0]}/category.json`);
-                    console.log(category);
-                    break;
+                    exists = true
+                    category = require(`../${s[0]}/category.json`)
+                    console.log(category)
+                    break
                 }
             }
 
             if (!exists) {
                 const embed = new EmbedBuilder()
                     .setColor("Red").setTitle("Command doesn't exist!")
-                    .setDescription(`The command you've entered, \`${cmdOp}\`, does not exist.\nDouble check the spelling of the command, and then try again.\n**REMEMBER: Command names are all lower-case.\nFor example: "Help" is incorrect, and "help" is correct.**`)
+                    .setDescription(`The command you"ve entered, \`${cmdOp}\`, does not exist.\nDouble check the spelling of the command, and then try again.\n**REMEMBER: Command names are all lower-case.\nFor example: "Help" is incorrect, and "help" is correct.**`)
                 return interaction.reply({embeds: [embed], ephemeral: true})
             } else {
                 const command = client.commands.get(cmdOp)

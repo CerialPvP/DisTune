@@ -2,7 +2,7 @@
  * All functions will be stored here.
  */
 
-const fs = require('fs')
+const fs = require("fs")
 
 module.exports = {
     loopCommands: loopCommands,
@@ -14,17 +14,17 @@ module.exports = {
  * @returns The commands
  */
 function loopCommands() {
-    const loopCommandsObj = [];
+    const loopCommandsObj = []
 
-    const commandFolders = fs.readdirSync("./src/commands");
+    const commandFolders = fs.readdirSync("./src/commands")
     for (const folder of commandFolders) {
-        const commandFiles = fs.readdirSync(`./src/commands/${folder}`).filter(file => file.endsWith('.js'))
+        const commandFiles = fs.readdirSync(`./src/commands/${folder}`).filter(file => file.endsWith(".js"))
         for (const file of commandFiles) {
             const push = `${folder};${file}`
             loopCommandsObj.push(push)
         }
     }
-    return loopCommandsObj;
+    return loopCommandsObj
 }
 
 /**
@@ -37,5 +37,5 @@ function loopCommands() {
 function randomNumber(min, max) {
     const rand = Math.floor(Math.random()*(max-min+1))+min
     console.log(rand)
-    return rand;
+    return rand
 }

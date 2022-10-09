@@ -1,13 +1,13 @@
 /**
  * When a member joins a server, they will receive roles the
- * server owners set up. This is very useful if you can't
+ * server owners set up. This is very useful if you can"t
  * bother with giving roles manually to people.
  */
 
-const { SlashCommandBuilder, SlashCommandSubcommandBuilder, EmbedBuilder, Embed, PermissionFlagsBits } = require('discord.js')
+const { SlashCommandBuilder, SlashCommandSubcommandBuilder, EmbedBuilder, Embed, PermissionFlagsBits } = require("discord.js")
 
-const { QuickDB } = require('quick.db')
-const db = new QuickDB({ filePath: `./database/autorole.sqlite` })
+const { QuickDB } = require("quick.db")
+const db = new QuickDB({ filePath: "./database/autorole.sqlite" })
 
 // Comamnd name & description
 var name = "autorole"
@@ -119,7 +119,7 @@ module.exports = {
             const embed = new EmbedBuilder()
                 .setColor("Green").setTitle("Autorole - Setup Complete")
                 .setDescription(`The setup has been completed.\n**Automated Role:** ${role}${(channel == null)?"":`\n**Logging Channel:** ${(channel == interaction.channel?`${channel} (this channel)`:channel)}`}`)
-                .setFooter({text: "TIP: Do you want to give more than 1 role to a new member? Use \`/autorole addrole <role>\` to add a role to Autorole."})
+                .setFooter({text: "TIP: Do you want to give more than 1 role to a new member? Use `/autorole addrole <role>` to add a role to Autorole."})
             interaction.reply({ embeds: [embed] })
         } else if (subcmd == "delete") {
             db.delete(`${interaction.guild.id}_roles`)

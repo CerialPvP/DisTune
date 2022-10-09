@@ -1,21 +1,21 @@
-const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, PermissionFlagsBits, InteractionType } = require("discord.js");
-const { loopCommands } = require('../../functions/utils/functions')
-const fs = require('fs')
+const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, PermissionFlagsBits, InteractionType } = require("discord.js")
+const { loopCommands } = require("../../functions/utils/functions")
+const fs = require("fs")
 
 // Databases
-const { QuickDB } = require('quick.db')
-const db = new QuickDB({filePath: './database/distune_bans.sqlite'})
+const { QuickDB } = require("quick.db")
+const db = new QuickDB({filePath: "./database/distune_bans.sqlite"})
 
 module.exports = {
-    name: 'interactionCreate',
+    name: "interactionCreate",
     async execute(interaction, client) {
         if (interaction.isChatInputCommand()) {
-            const {commands} = client;
-            const {commandName} = interaction;
-            const command = commands.get(commandName);
+            const {commands} = client
+            const {commandName} = interaction
+            const command = commands.get(commandName)
 
             // Guild ban check
-            const guildBans = await db.get('guild_bans')
+            const guildBans = await db.get("guild_bans")
             let guildBanned = false
             let guildBanInfo
             for (const loopBans in guildBans) {
@@ -39,7 +39,7 @@ module.exports = {
             }
 
             // User ban check
-            const userBans = await db.get('user_bans')
+            const userBans = await db.get("user_bans")
             let userBanned = false
             let userBanInfo
             for (const loopBans in userBans) {
@@ -80,16 +80,16 @@ module.exports = {
                 }*/
             }
 
-            if (!command) return;
+            if (!command) return
 
             try {
-                await command.execute(interaction, client);
+                await command.execute(interaction, client)
             } catch (error) {
                 console.error(error)
                 const button = new ButtonBuilder()
                     .setURL("https://discord.gg/vpjefqnRYR")
                     .setStyle(ButtonStyle.Link)
-                    .setLabel("Join Support Server");
+                    .setLabel("Join Support Server")
 
                 const embed = new EmbedBuilder()
                     .setColor("Red").setTitle("Internal Error!")
@@ -99,13 +99,13 @@ module.exports = {
                     if (interaction.replied) {return interaction.followUp({embeds: [embed], components: [new ActionRowBuilder().addComponents(button)]})}
                     else if (interaction.deferred) {return interaction.editReply({embeds: [embed], components: [new ActionRowBuilder().addComponents(button)]})}
                     else {return interaction.reply({embeds: [embed], components: [new ActionRowBuilder().addComponents(button)]})}
-                }, 350);
+                }, 350)
             }
         } else if (interaction.isAutocomplete()) {
             const { commands } = client
             const { commandName } = interaction
             const command = commands.get(commandName)
-            if (!command) return;
+            if (!command) return
 
             try {
                 await command.autocomplete(interaction, client)
@@ -114,7 +114,7 @@ module.exports = {
                 const button = new ButtonBuilder()
                     .setURL("https://discord.gg/vpjefqnRYR")
                     .setStyle(ButtonStyle.Link)
-                    .setLabel("Join Support Server");
+                    .setLabel("Join Support Server")
 
                 const embed = new EmbedBuilder()
                     .setColor("Red").setTitle("Internal Autocomplete Error")

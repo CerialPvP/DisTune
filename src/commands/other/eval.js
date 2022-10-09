@@ -1,17 +1,17 @@
-const { SlashCommandBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, ComponentType } = require('discord.js')
-//const { developers } = require('../config.json')
+const { SlashCommandBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, ComponentType } = require("discord.js")
+//const { developers } = require("../config.json")
 
 var name = "eval"
-var desc = "Make bot say execute something."
+var desc = "Make the bot execute something."
 
 const clean = async (text) => {
     if (text && text.constructor.name == "Promise")
-      text = await text
+        text = await text
     if (typeof text !== "string")
-      text = require("util").inspect(text, { depth: 1 })
+        text = require("util").inspect(text, { depth: 1 })
     text = text
-      .replace(/`/g, "`" + String.fromCharCode(8203))
-      .replace(/@/g, "@" + String.fromCharCode(8203))
+        .replace(/`/g, "`" + String.fromCharCode(8203))
+        .replace(/@/g, "@" + String.fromCharCode(8203))
     return text
 }
 
@@ -49,12 +49,12 @@ module.exports = {
                     )
                 )
             interaction.showModal(modal)
-            const filter = (interaction) => interaction.customId === 'eval';
+            const filter = (interaction) => interaction.customId === "eval"
             interaction.awaitModalSubmit({ filter, time: 120000 })
-            .then(inter => {
-                check(inter, inter.fields.getTextInputValue("code"), interaction.options.getBoolean("ephemeral") || false)
-            })
-            .catch(err => err)
+                .then(inter => {
+                    check(inter, inter.fields.getTextInputValue("code"), interaction.options.getBoolean("ephemeral") || false)
+                })
+                .catch(err => err)
         }else{
             check(interaction, interaction.options.getString("code"), interaction.options.getBoolean("ephemeral") || false)
         }
@@ -86,9 +86,9 @@ async function check(interaction, code, ephemeral){
         const message = await interaction.reply({embeds: [embed], components: [buttons], ephemeral: ephemeral})
 
         const filter = i => {
-            i.deferUpdate();
-            return i.user.id === interaction.user.id;
-        };
+            i.deferUpdate()
+            return i.user.id === interaction.user.id
+        }
         
         message.awaitMessageComponent({ filter, componentType: ComponentType.Button, time: 30000 })
             .then(inter => {
@@ -100,7 +100,7 @@ async function check(interaction, code, ephemeral){
                     interaction.editReply({embeds: [embed], components: []})
                 }
             })
-            .catch(err => err);
+            .catch(err => err)
     }else{
         done(interaction, code, ephemeral, false)
     }
@@ -108,7 +108,7 @@ async function check(interaction, code, ephemeral){
 
 async function done(interaction, code, ephemeral, foundIllegals){
     const embed = new EmbedBuilder()
-        .setColor('Yellow').setAuthor({name: interaction.user.tag, iconURL: interaction.user.displayAvatarURL()})
+        .setColor("Yellow").setAuthor({name: interaction.user.tag, iconURL: interaction.user.displayAvatarURL()})
         .setFooter({text: "Executing..."})
     function setEvalEmbedDesc(code, result){
         embed.setDescription(`__Your current code:__ \`\`\`js\n${code}\`\`\`\n__Parser Results:__\`\`\`json\n${result}\`\`\``)

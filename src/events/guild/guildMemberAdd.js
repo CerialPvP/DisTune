@@ -1,5 +1,5 @@
-const { EmbedBuilder } = require('discord.js')
-const { QuickDB } = require('quick.db')
+const { EmbedBuilder } = require("discord.js")
+const { QuickDB } = require("quick.db")
 const db = new QuickDB({ filePath: "./database/autorole.sqlite" })
 
 module.exports = {
