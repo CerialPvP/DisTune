@@ -65,7 +65,7 @@ function booleanToTrad(bool, capital) {
 
 /**
  * "Joins" the object with a custom string. For example: "obj 1, obj 2"
- * @param {Object} obj The object you want to join.
+ * @param {Object|Array} obj The object you want to join.
  * @param {String} char The charater you want to connect the object.
  * @returns {String} The final joined object.
  */
