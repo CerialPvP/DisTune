@@ -64,9 +64,10 @@ module.exports = {
                 {name: "Moderator", value: `${interaction.member}`, inline: true},
                 {name: "Reason", value: reason, inline: true}
             )
-        user.send({embeds: [kickEmbed]}).catch(err => {
+        await user.send({embeds: [kickEmbed]}).catch(err => {
             embedSendError = true
         })
+        
         // Kick the member using the kick function above
         const embed = await kickMember(member, reason, embedSendError)
         return await interaction.editReply({embeds: [embed]})
