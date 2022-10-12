@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, EmbedBuilder, ChatInputCommandInteraction, PermissionFlagsBits, GuildMember, ColorResolvable } = require("discord.js")
+const { SlashCommandBuilder, EmbedBuilder, ChatInputCommandInteraction, PermissionFlagsBits, GuildMember, ColorResolvable, Embed } = require("discord.js")
 
 var name = "kick"
 var desc = "Kick a user from a Discord server."
@@ -13,7 +13,6 @@ var desc = "Kick a user from a Discord server."
 async function kickMember(member, reason, embedNotSent) {
     let err = false
     const kick = await member.kick(reason).catch(e => {err = true})
-    console.log(kick)
     
     if (err) {
         const embed2 = new EmbedBuilder()
@@ -24,7 +23,7 @@ async function kickMember(member, reason, embedNotSent) {
         /** @type {ColorResolvable} */
         let color
 
-        if (embedNotSent) {color = "DarkOrange"} else {color = "Green"}
+        if (embedNotSent) {color = "Orange"} else {color = "Green"}
         const embed1 = new EmbedBuilder()
             .setColor(color).setTitle("Kicked successfully.")
             .setDescription(`The member ${member} has been kicked from this server.\nThey will be able to rejoin this server with a new invite.${(embedNotSent)?"\n**:warning: The kick embed has not been sent to the kicked member because they had their DM's closed. :warning:**":""}`)
@@ -53,12 +52,17 @@ module.exports = {
         const reason = interaction.options.getString("reason")
 
         const member = interaction.guild.members.cache.get(user.id)
-        //console.log(member)
+        if (!member) {
+            const errEmbed = new EmbedBuilder() 
+                .setColor("Red").setTitle("That member is not in this server.")
+                .setDescription(`The member ${user} has either left the server or that member never joined.`)
+            return await interaction.editReply({embeds: [errEmbed]})
+        }
 
         // Send the kick embed first to the member
         let embedSendError = false
         const kickEmbed = new EmbedBuilder()
-            .setColor("DarkOrange").setTitle("You have been kicked!")
+            .setColor("Orange").setTitle("You have been kicked!")
             .setDescription(`You got kicked from the server **${interaction.guild.name}**.`)
             .addFields(
                 {name: "Moderator", value: `${interaction.member}`, inline: true},
@@ -67,7 +71,7 @@ module.exports = {
         await user.send({embeds: [kickEmbed]}).catch(err => {
             embedSendError = true
         })
-        
+
         // Kick the member using the kick function above
         const embed = await kickMember(member, reason, embedSendError)
         return await interaction.editReply({embeds: [embed]})
