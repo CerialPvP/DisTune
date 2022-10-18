@@ -1,4 +1,5 @@
 [![Support DisTune on Ko-fi](https://storage.ko-fi.com/cdn/brandasset/kofi_s_tag_dark.png)](https://ko-fi.com/distune "Support DisTune on Ko-fi")
+*To support my work on DisTune, you can donate to me on Ko-fi by clicking on the image above or by clicking on the link in the "Support this project" section.*
 
 ## DisTune
 
