@@ -12,10 +12,14 @@ Interested in the Skript version? Visit the public archive [here](https://github
 
 With every new update of [DiSky](https://github.com/DiSkyOrg/DiSky/releases/tag/4.4.3) (the Skript addon for Discord stuff), the syntax changes drastically. In the lastest update (at the time of writing this, it is 4.4.3), the syntax for sending embeds and storing it has changed, and that will affect most of DisTune's code.
 
-For this reason, I have decided to scratch off DiSky, and decided to start using **discord.js**. Unlike with DiSky, where I came with most knowledge, in JS, I don't really know some stuff.
+Because DisTune is going to be a **long term** bot, DiSky is not the fit. It is an addon for a simple Discord to Minecraft or just basic commands, but if I want this bot to actually be popular, welp, mission impossible with DiSky, since it does not have sharding support.
 
-This is why community-maintained resources such as [discordjs.guide](https://discordjs.guide) are very helpful. **If you need help in coding, checking documentation is your first priority.**
+Now, you might ask, **what is sharding?**
 
-## Contribution Info
+**Sharding** is splitting the bot's process and then allocating that "shard" to guilds.
 
-Do you want to contribute to this project? Check out the full DisTune Contribution Guide.
+Let's say the bot is in 4,000 guilds, if we were to allocate 1,000 servers per shard, then we would have 4 shards.
+
+Now, we can't just avoid the sharding process, since if we reach 2,500 guilds, Discord will not let us login regularly; Instead we need to do sharding.
+
+You can see how sharding can be critical to DisTune. Now, Sky (the maker of DiSky) said he will **not** implement sharding support, so this is why we switched over to discord.js.
