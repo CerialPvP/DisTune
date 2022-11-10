@@ -34,11 +34,6 @@ module.exports = {
                         .setDescription("The role you want to use for Autorole. You can add more later with /autorole addrole.")
                         .setRequired(true),
                 )
-                .addChannelOption(option =>
-                    option.setName("logchannel")
-                        .setDescription("This will be the channel I will log any new members to.")
-                        .setRequired(false),
-                )
         )
         .addSubcommand(subcommand =>
             subcommand
@@ -77,7 +72,6 @@ module.exports = {
 
         if (subcmd == "info") {
             const roles = await db.get(`${interaction.guild.id}_roles`)
-            const channel = await db.get(`${interaction.guild.id}_logchannel`)
             
             const roleArray = []
             for (let loopRole in roles) {
@@ -89,13 +83,11 @@ module.exports = {
             if (roles == null) {roleCond = true}
             else if (roles.length < 1) {roleCond = true}
             
-            const getChannel = interaction.guild.channels.cache.find(c => c.id === channel)
             const embed = new EmbedBuilder()
                 .setColor("Blurple").setTitle("Autorole - Information")
                 .setDescription("Do you want to give any new members who join your server roles automatically?\nWell, you can with Autorole!\nAutorole automatically gives roles you tell me to give to any new member who joins.\nMake your **new members** feel honoured today.")
                 .addFields(
                     { name: "Roles", value: `${(!roleCond)?roleArray:"No roles have been set up yet."}` },
-                    { name: "Logging Channel", value: `${(channel !== null)?`${(interaction.channel == getChannel)?`${getChannel} (this channel)`:getChannel}`:"No log channel has been set."}`},
                 )
             await interaction.reply({embeds: [embed]})
             
@@ -110,20 +102,16 @@ module.exports = {
             }
 
             const role = interaction.options.getRole("role")
-            const channel = interaction.options.getChannel("logchannel")
 
             db.push(`${interaction.guild.id}_roles`, role.id)
 
-            if (channel !== null) {db.set(`${interaction.guild.id}_logchannel`, channel.id);const opchannelmsg = `\n**Logging channel (Optional):** ${channel}`}
-
             const embed = new EmbedBuilder()
                 .setColor("Green").setTitle("Autorole - Setup Complete")
-                .setDescription(`The setup has been completed.\n**Automated Role:** ${role}${(channel == null)?"":`\n**Logging Channel:** ${(channel == interaction.channel?`${channel} (this channel)`:channel)}`}`)
+                .setDescription(`The setup has been completed.\n**Automated Role:** ${role}`)
                 .setFooter({text: "TIP: Do you want to give more than 1 role to a new member? Use `/autorole addrole <role>` to add a role to Autorole."})
             interaction.reply({ embeds: [embed] })
         } else if (subcmd == "delete") {
             db.delete(`${interaction.guild.id}_roles`)
-            db.delete(`${interaction.guild.id}_logchannel`)
 
             const embed = new EmbedBuilder()
                 .setColor("Green").setTitle("Autorole - Data Deleted.")
