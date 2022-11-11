@@ -2,7 +2,7 @@
  * All functions will be stored here.
  */
 
-const { EmbedBuilder, Embed } = require("discord.js")
+const { EmbedBuilder, Embed, User, Guild } = require("discord.js")
 const fs = require("fs")
 
 module.exports = {
@@ -14,6 +14,8 @@ module.exports = {
     invalidCompUser: invalidCompUser,
     permBitfieldToString: permBitfieldToString,
     getFullTimeTextFromMS: getFullTimeTextFromMS,
+    numToName: numToName,
+    welcomePlaceholder: welcomePlaceholder
 }
 
 /**
@@ -191,4 +193,91 @@ function getFullTimeTextFromMS(t){
     if (minutes){textList.push(`${minutes} minutes`)}
     if (seconds){textList.push(`${seconds} seconds`)}
     return textList.join(", ")
+}
+
+/**
+ * Converts a number to a number name, for example "one"
+ * @param {Number} num The number.
+ * @returns {String} The number name.
+ */
+function numToName(num) {
+    switch (num) {
+        case 1:
+            return "1️⃣"
+        case 2:
+            return "2️⃣"
+        case 3:
+            return "3️⃣"
+        case 4:
+            return "4️⃣"
+        case 5:
+            return "5️⃣"
+        case 6:
+            return "6️⃣"
+        case 7:
+            return "7️⃣"
+        case 8:
+            return "8️⃣"
+        case 9:
+            return "9️⃣"
+        case 10:
+            return "🔟"
+        
+        default:
+            return "invalid"
+    }
+}
+
+/**
+ * Takes the welcome message, gets the placeholders and returns the welcome message with the placeholder values.
+ * @param {String} msg The original welcome message.
+ * @param {User} user The user which joined the guild.
+ * @param {Guild} guild The guild which the user joined.
+ * @returns {String} The welcome message with the placeholder values.
+ */
+async function welcomePlaceholder(msg, user, guild) {
+    const split = msg.split(" ")
+    let newMsg = []
+    for (const loopValue of split) {
+        // Switch/case state here
+        switch (loopValue) {
+            // User Placeholders
+            case "{user}":
+                newMsg.push(user)
+                break
+            
+            case "{username}":
+                newMsg.push(`${user.username}#${user.discriminator}`)
+                break
+            
+            case "{userid}":
+                newMsg.push(user.id)
+
+            // Guild Placeholders
+            case "{guild}":
+                newMsg.push(guild.name)
+                break
+            
+            case "{guildid}":
+                newMsg.push(guild.id)
+                break
+
+            case "{membercount}":
+                newMsg.push(guild.memberCount)
+                break
+        
+            default:
+                newMsg.push(loopValue)
+                break
+        }
+
+        if (loopValue.includes("{channel:")) {
+            const name = (loopValue.split(":")[1]).replace("}", "")
+            const findChannel = await guild.channels.cache.find(c => c.name == name)
+            newMsg.splice(newMsg.indexOf("{channel:"), 1)
+            newMsg.push(findChannel || name)
+        }
+    }
+
+    return newMsg.join(" ")
 }
