@@ -254,26 +254,26 @@ async function welcomePlaceholder(msg, user, guild) {
                 const name = (loopSplitSpace.split(":")[1]).replace("}", "")
                 const findChannel = await guild.channels.cache.find(c => c.name == name)
                 newMsg.splice(newMsg.indexOf("{channel:"), 1)
-                newMsg.push(findChannel || name)
+                newMsg.push(loopSplitSpace.replace(`{channel:${name}}`, findChannel || name))
                 
             } else if (loopSplitSpace.includes("{user}")) {
-                newMsg.push(user)
+                newMsg.push(loopSplitSpace.replace("{user}", user))
                 
             } else if (loopSplitSpace.includes("{username}")) {
-                newMsg.push(`${user.username}#${user.discriminator}`)
+                newMsg.push(loopSplitSpace.replace("{username}", `${user.username}#${user.discriminator}`))
                 
             } else if (loopSplitSpace.includes("{userid}")) {
-                newMsg.push(user.id)
+                newMsg.push(loopSplitSpace.replace("{userid}", user.id))
                 
             // Guild Placeholders
             } else if (loopSplitSpace.includes("{guild}")) {
-                newMsg.push(guild.name)
+                newMsg.push(loopSplitSpace.replace("{guild}", guild))
                 
             } else if (loopSplitSpace.includes("{guildid}")) {
-                newMsg.push(`${guild.id}`)
+                newMsg.push(loopSplitSpace.replace("{guildid}", guild.id))
                 
             } else if (loopSplitSpace.includes("{membercount}")) {
-                newMsg.push(guild.memberCount)
+                newMsg.push(loopSplitSpace.replace("{membercount}", guild.memberCount))
                 
             } else {
                 newMsg.push(loopSplitSpace)
@@ -281,7 +281,5 @@ async function welcomePlaceholder(msg, user, guild) {
             }
         }
     }
-
-    console.log(newMsg)
     return newMsg.join(" ")
 }
