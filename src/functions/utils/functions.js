@@ -3,6 +3,7 @@
  */
 
 const { EmbedBuilder, Embed, User, Guild } = require("discord.js")
+const e = require("express")
 const fs = require("fs")
 
 module.exports = {
@@ -236,48 +237,51 @@ function numToName(num) {
  * @returns {String} The welcome message with the placeholder values.
  */
 async function welcomePlaceholder(msg, user, guild) {
-    const split = msg.split(" ")
+    // Split the message at nl
+    const splitNL = msg.split("\n")
+    // Initialize splitnl index
+    let splitNLIndex = -1
+    // Intialize list variable with index
     let newMsg = []
-    for (const loopValue of split) {
-        // Switch/case state here
-        switch (loopValue) {
-            // User Placeholders
-            case "{user}":
+    for (const loopSplitNL of splitNL) {
+        splitNLIndex++
+        console.log(splitNLIndex)
+        // Add a nl to the array
+        if (splitNLIndex > 0) newMsg.push("\n")
+        const splitSpace = loopSplitNL.split(" ")
+        for (const loopSplitSpace of splitSpace) {
+            if (loopSplitSpace.includes("{channel:")) {
+                const name = (loopSplitSpace.split(":")[1]).replace("}", "")
+                const findChannel = await guild.channels.cache.find(c => c.name == name)
+                newMsg.splice(newMsg.indexOf("{channel:"), 1)
+                newMsg.push(findChannel || name)
+                
+            } else if (loopSplitSpace.includes("{user}")) {
                 newMsg.push(user)
-                break
-            
-            case "{username}":
+                
+            } else if (loopSplitSpace.includes("{username}")) {
                 newMsg.push(`${user.username}#${user.discriminator}`)
-                break
-            
-            case "{userid}":
+                
+            } else if (loopSplitSpace.includes("{userid}")) {
                 newMsg.push(user.id)
-
+                
             // Guild Placeholders
-            case "{guild}":
+            } else if (loopSplitSpace.includes("{guild}")) {
                 newMsg.push(guild.name)
-                break
-            
-            case "{guildid}":
-                newMsg.push(guild.id)
-                break
-
-            case "{membercount}":
+                
+            } else if (loopSplitSpace.includes("{guildid}")) {
+                newMsg.push(`${guild.id}`)
+                
+            } else if (loopSplitSpace.includes("{membercount}")) {
                 newMsg.push(guild.memberCount)
-                break
-        
-            default:
-                newMsg.push(loopValue)
-                break
-        }
-
-        if (loopValue.includes("{channel:")) {
-            const name = (loopValue.split(":")[1]).replace("}", "")
-            const findChannel = await guild.channels.cache.find(c => c.name == name)
-            newMsg.splice(newMsg.indexOf("{channel:"), 1)
-            newMsg.push(findChannel || name)
+                
+            } else {
+                newMsg.push(loopSplitSpace)
+                
+            }
         }
     }
 
+    console.log(newMsg)
     return newMsg.join(" ")
 }
