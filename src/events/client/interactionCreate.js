@@ -1,5 +1,5 @@
-const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, PermissionFlagsBits, InteractionType } = require("discord.js")
-const { loopCommands } = require("../../functions/utils/functions")
+const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, PermissionFlagsBits, InteractionType, ChatInputCommandInteraction } = require("discord.js")
+const { loopCommands, permBitfieldToString } = require("../../functions/utils/functions")
 const fs = require("fs")
 
 // Databases
@@ -8,6 +8,12 @@ const db = new QuickDB({filePath: "./database/distune_bans.sqlite"})
 
 module.exports = {
     name: "interactionCreate",
+    /**
+     * 
+     * @param {ChatInputCommandInteraction} interaction 
+     * @param {*} client 
+     * @returns 
+     */
     async execute(interaction, client) {
         if (interaction.isChatInputCommand()) {
             const {commands} = client
@@ -70,8 +76,9 @@ module.exports = {
                 if (split[1].startsWith(commandName) && finalFile.permission && !interaction.member.permissions.has(finalFile.permission)) {
                     const permErr = new EmbedBuilder()
                         .setColor("Red").setTitle("No Permission!")
-                        .setDescription(`Sorry, but you don't have permission to use this command.\nYou need \`${finalFile.permission}\` permission to use this command.\nIf you are sure you have this permission, contact your server's administrator.`)
+                        .setDescription(`Sorry, but you don't have permission to use this command.\nYou need \`${permBitfieldToString(finalFile.permission)}\` permission to use this command.\nIf you are sure you have this permission, contact your server's administrator.`)
                     return interaction.reply({embeds: [permErr], ephemeral: true})
+                    
                 } /*else if (finalFile.devonly && interaction.member.id !== '702044939520835587') {
                     const embed = new EmbedBuilder()
                         .setColor("Red").setTitle("Command for developers only.")

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">'
+    <link rel="stylesheet" href="index.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <script>
+        $(".menu").click(function() {
+            $(this).toggleClass("open")
+        })
+    </script>
+    <title>DisTune - Have a functioning server in minutes.</title>
+    <link rel="icon" type="image/x-icon" href="/api/images/favicon.ico">
+</head>
+<body>
+    <div class="wrapper">
+        <header>
+            <a href="#" class="logo">DisTune</a>
+            <nav>
+                <ul>
+                    <li><a href="#">Home</a></li>
+                    <li><a href="#">Invite</a></li>
+                    <li><a href="#">Sign In</a></li>
+                </ul>
+
+                <div class="menu hamburger" data-menu="14">
+                    <div class="icon-circle"></div>
+                    <div class="icon"></div>
+                </div>
+            </nav>
+        </header>
+
+        
+
+        <section class="hero">
+            <h1>Have a functioning Discord server in minutes.</h1>
+            <p class="subhead">DisTune is a bot which unlocks many features which were not available before to you.</p>
+        </section>
+
+        <section class="more-info">
+            <div class="feature">
+                <div class="content">
+                    <p class="title">Lorem, ipsum.</p>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Magni sunt mollitia dicta eveniet voluptas natus.</p>
+                </div>
+                <img src="distune-placeholder.png" alt="Placeholder Text">
+            </div>
+        </section>
+
+        <p class="small">Site built with ❤️ by Cerial</p>
+    </div>
+</body>
+</html>

@@ -1,4 +1,5 @@
 require("dotenv").config()
+require("../api/api.js")
 /*
 If the main bot is used, use "token_main".
 If the dev bot is used, use "token_dev".
