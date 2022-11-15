@@ -12,9 +12,8 @@ module.exports = {
     /**
      * 
      * @param {ChatInputCommandInteraction} interaction 
-     * @param {*} client 
      */
-    async execute(interaction, client) {
+    async execute(interaction) {
         const row = new ActionRowBuilder().addComponents(
             // DisTune Github
             new ButtonBuilder().setStyle(ButtonStyle.Link).setURL("https://github.com/CerialPvP/DisTune").setLabel("DisTune's GitHub").setEmoji("<:distune_github:1033309948337197116>"),

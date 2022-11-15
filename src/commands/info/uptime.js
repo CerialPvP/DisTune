@@ -13,9 +13,8 @@ module.exports = {
     /**
      * 
      * @param {ChatInputCommandInteraction} interaction 
-     * @param {*} client 
      */
-    async execute(interaction, client) {
+    async execute(interaction) {
         const embed = new EmbedBuilder()
             .setColor("Green").setTitle("Uptime")
             .setDescription(`The bot uptime is: \n**${getFullTimeTextFromMS(interaction.client.uptime)}**`)

@@ -18,7 +18,7 @@ module.exports = {
         .setDescription(desc)
         .addStringOption(option => option.setName("command").setDescription("The command you want me to tell you information about!").setAutocomplete(true).setRequired(false)),
     
-    async autocomplete(interaction, client) {
+    async autocomplete(interaction) {
         const focused = interaction.options.getFocused(true)
         let choices = []
 
@@ -41,7 +41,7 @@ module.exports = {
         )
     },
 
-    async execute(interaction, client) {
+    async execute(interaction) {
         const cmdOp = interaction.options.getString("command")
         let category
 

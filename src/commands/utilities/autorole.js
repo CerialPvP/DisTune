@@ -53,7 +53,7 @@ module.exports = {
                 .addRoleOption(option => option.setName("role").setDescription("The role you want to add.").setRequired(true))
         ),
     
-    async execute(interaction, client) {
+    async execute(interaction) {
 
         subcmd = interaction.options.getSubcommand()
         const r = await db.get(`${interaction.guild.id}_roles`)

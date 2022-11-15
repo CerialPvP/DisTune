@@ -15,9 +15,8 @@ module.exports = {
     /**
      * 
      * @param {ChatInputCommandInteraction} interaction 
-     * @param {*} client 
      */
-    async execute(interaction, client) {
+    async execute(interaction) {
         const sTime = interaction.options.getInteger("time") || 5
         const time = sTime * 1000
         console.log(`${sTime} ${time}`)

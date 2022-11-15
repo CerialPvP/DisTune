@@ -30,9 +30,8 @@ module.exports = {
     /**
      * 
      * @param {ChatInputCommandInteraction} interaction 
-     * @param {*} client 
      */
-    async execute(interaction, client) {
+    async execute(interaction) {
         const subcmd = interaction.options.getSubcommand()
         // Check if the server has the welcome system set up.
         if (!await db.get(interaction.guild.id) && subcmd !== "setup") {

@@ -90,7 +90,7 @@ module.exports = {
             if (!command) return
 
             try {
-                await command.execute(interaction, client)
+                await command.execute(interaction)
             } catch (error) {
                 console.error(error)
                 const button = new ButtonBuilder()

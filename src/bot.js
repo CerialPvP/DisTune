@@ -9,7 +9,7 @@ const { token_dev } = process.env
 const { Client, Collection, GatewayIntentBits } = require("discord.js")
 const fs = require("fs")
 
-const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers] })
+const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers, GatewayIntentBits.GuildVoiceStates] })
 client.commands = new Collection()
 client.buttons = new Collection()
 client.commandArray = []

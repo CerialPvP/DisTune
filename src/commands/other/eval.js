@@ -38,7 +38,7 @@ module.exports = {
                 .setDescription("If you want the code executed to be only shown for you select 'True'")
                 .setRequired(false)
         ),
-    async execute(interaction, client){
+    async execute(interaction){
 
         if (!interaction.user.id == "702044939520835587" || !interaction.user.id == "410781931727486976") {return interaction.reply({content: "You do not have permission to use eval!", ephemeral: true})}
         if (!interaction.options.getString("code")){
