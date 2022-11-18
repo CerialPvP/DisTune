@@ -33,8 +33,7 @@ module.exports = {
         options.channel.messages.fetch({limit: options.amount, before: (await interaction.fetchReply()).id}).then(async m => {
             const replyID = (await interaction.fetchReply()).id
             const filter = m.filter(msg => msg.id !== replyID)
-            console.log(filter.size)
-            options.channel.bulkDelete(filter, {filterOld: true}).catch(err => console.log(err)).then(() => {console.log("deleted msg")})
+            options.channel.bulkDelete(filter, {filterOld: true}).catch(err => err)
             const successEmbed = new EmbedBuilder()
                 .setColor("Green").setTitle("Finished purging!")
                 .setDescription(`**${filter.size}** messages have been deleted from ${options.channel}.\nThis took **${Date.now()-n1}ms**.`)
