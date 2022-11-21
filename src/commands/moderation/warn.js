@@ -2,8 +2,8 @@ const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits, ChatInputCommand
 const { QuickDB } = require("quick.db")
 const db = new QuickDB({filePath: "./database/punishments.sqlite"})
 
-var name = "unwarn"
-var desc = "Remove a warning from a user."
+var name = "warn"
+var desc = "Add a warning to a user."
 
 module.exports = {
     name: name,

@@ -22,7 +22,7 @@ module.exports = {
         console.log(`${sTime} ${time}`)
         if (time > 300000 || time < 5000) {
             const errEmbed = new EmbedBuilder()
-                .setColor("Red").setTitle("Too long!")
+                .setColor("Red").setTitle("Too " + (time >= 300000)?"long!":(time <= 5000)?"short!":"")
                 .setDescription(`The time cannot be ${(time >= 300000)?"longer than 5 minutes (300 seconds)":(time <= 5000)?"shorter than 5 seconds":""}.`)
             return interaction.reply({embeds: [errEmbed], ephemeral: true})
         }
