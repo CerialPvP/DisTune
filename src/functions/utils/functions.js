@@ -45,9 +45,7 @@ function loopCommands() {
  */
 
 function randomNumber(min, max) {
-    const rand = Math.floor(Math.random()*(max-min+1))+min
-    console.log(rand)
-    return rand
+    return Math.floor(Math.random()*(max-min+1))+min
 }
 
 /**
@@ -87,10 +85,9 @@ function betterJoin(obj, char) {
  * @returns {EmbedBuilder} The embed.
  */
 function permEmbed(perm) {
-    const permErr = new EmbedBuilder()
+    return new EmbedBuilder()
         .setColor("Red").setTitle("No Permission!")
         .setDescription(`Sorry, but you don't have permission to use this command.\nYou need \`${perm}\` permission to use this command.\nIf you are sure you have this permission, contact your server's administrator.`)
-    return permErr
 }
 
 /**
@@ -99,8 +96,7 @@ function permEmbed(perm) {
  * @returns {EmbedBuilder} The embed.
  */
 function invalidCompUser(comp) {
-    const embed = new EmbedBuilder().setColor("Red").setDescription(`This is not your ${comp}!`)
-    return embed
+    return new EmbedBuilder().setColor("Red").setDescription(`This is not your ${comp}!`)
 }
 
 /**
